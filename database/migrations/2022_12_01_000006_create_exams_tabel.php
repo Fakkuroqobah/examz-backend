@@ -15,12 +15,10 @@ class CreateExamsTabel extends Migration
     {
         Schema::create('exams', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('class', 1);
+            $table->string('class', 2);
             $table->string('name');
-            $table->dateTime('starts')->nullable();
-            $table->dateTime('due')->nullable();
-            $table->tinyInteger('hours')->nullable();
-            $table->tinyInteger('minutes')->nullable();
+            $table->enum('status', ['inactive', 'launched', 'finished'])->default('inactive');
+            $table->string('token', 5)->nullable();
             $table->boolean('is_random')->default(0);
             $table->string('thumbnail')->default('exam/exam_image.png');
             $table->text('description')->nullable();

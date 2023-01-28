@@ -17,41 +17,33 @@ class ExamLaunchController extends Controller
     public function launch($id, Request $request)
     {
         $request->validate([
-            'due' => 'required',
-            'hours' => 'required',
-            'minutes' => 'required',
             'class' => 'required'
         ]);
-
-        $start = now();
-
-        if($start >= $request->due) {
-            return response()->json([
-                'errors' => ['server' => ['The start date cannot be greater than the due date']]
-            ], 422);
-        }
 
         $sumStudent = Student::select(['id'])->count();
         if($sumStudent == 0) {
             return response()->json([
                 'errors' => ['server' => ['Blank student data']],
-                'type' => 1
             ], 422);
         }
 
         $sumQuestion = Question::select(['id'])->where('exam_id', $id)->first();
-        if($sumQuestion == null) {
+        if(is_null($sumQuestion)) {
             return response()->json([
                 'errors' => ['server' => ['The question is still empty']],
             ], 422);
         }
 
         try {
-            $exam = Exam::select('id')->whereNull('starts')->where('id', $id)->first();
+            $exam = Exam::select('id')->where('status', 'inactive')->where('id', $id)->first();
 
-            if($exam == null) throw new Exception("The exam is running");
+            if(is_null($exam)) {
+                return response()->json([
+                    'errors' => ['server' => ['The exam is running or finished']],
+                ], 422);
+            }
 
-            DB::transaction(function() use ($request, $start, $exam) {
+            DB::transaction(function() use ($request, $exam) {
                 $students = Student::select(['id'])->where('class', $request->class)->get()->toArray();
                 $arr = [];
 
@@ -65,10 +57,7 @@ class ExamLaunchController extends Controller
                 StudentExam::insert($arr);
 
                 $exam->update([
-                    'starts' => $start,
-                    'due' => $request->due,
-                    'hours' => $request->hours,
-                    'minutes' => $request->minutes,
+                    'status' => 'launched',
                     'is_random' => ($request->random == 'true') ? true : false
                 ]);
             });
@@ -87,19 +76,10 @@ class ExamLaunchController extends Controller
     public function stop(Request $request)
     {
         try {
-            $exam = Exam::find($request->id);
-
-            DB::transaction(function() use ($request, $exam) {
-                $exam->update([
-                    'starts' => null,
-                    'due' => null,
-                    'hours' => null,
-                    'minutes' => null
-                ]);
-
-                StudentExam::select('id')->where('exam_id', $request->id)->delete();
-                AnswerStudent::select('id')->where('exam_id', $request->id)->delete();
-            });
+            $exam = Exam::findOrFail($request->id);
+            $exam->update([
+                'status' => 'finished',
+            ]);
 
             return response()->json([
                 'message' => 'Success'

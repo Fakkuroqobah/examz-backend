@@ -63,6 +63,7 @@ Route::prefix('supervisor')->group(function () {
             Route::get('/clone/{id}', [ExamController::class, 'clone']);
             Route::post('/launch/{id}', [ExamController::class, 'launch']);
             Route::post('/stop', [ExamController::class, 'stop']);
+            Route::get('/answer/{examId}/{studentId}', [ExamController::class, 'answer']);
         });
 
         Route::prefix('exam/question')->group(function () {

@@ -17,18 +17,15 @@ use File;
 class ExamController extends Controller
 {
     public function index() {
-        $examInActive = Exam::whereNull('starts')->get();
-        $examActive = Exam::where('starts', '>=', date('Y-m-d H:i:s'))->where('due', '>=', date('Y-m-d H:i:s'))->get(); // Ujian belum mulai tapi sudah di set
-        $examLaunched = Exam::where('starts', '<=', date('Y-m-d H:i:s'))->where('due', '>=', date('Y-m-d H:i:s'))->get(); // Ujian yang sedang berlangsung
-        $examFinished = Exam::where('starts', '<=', date('Y-m-d H:i:s'))->where('due', '<=', date('Y-m-d H:i:s'))->get(); // Ujian yang sudah selesai
+        $examInActive = Exam::where('status', 'inactive')->get();
+        $examLaunched = Exam::where('status', 'launched')->get();
+        $examFinished = Exam::where('status', 'finished')->get();
 
         $sumExamInActive = 0;
-        $sumExamActive = 0;
         $sumExamLaunched = 0;
         $sumExamFinished = 0;
 
         if(isset($examInActive)) $sumExamInActive = count($examInActive);
-        if(isset($examActive)) $sumExamActive = count($examActive);
         if(isset($examLaunched)) $sumExamLaunched = count($examLaunched);
         if(isset($examFinished)) $sumExamFinished = count($examFinished);
 
@@ -36,57 +33,26 @@ class ExamController extends Controller
             'message' => 'Success',
             'data' => [
                 "examInActive" => $examInActive,
-                "examActive" => $examActive,
                 "examLaunched" => $examLaunched,
                 "examFinished" => $examFinished,
                 "sumExamInActive" => $sumExamInActive,
-                "sumExamActive" => $sumExamActive,
                 "sumExamLaunched" => $sumExamLaunched,
                 "sumExamFinished" => $sumExamFinished
             ]
         ], 200);
     }
 
-    // public function index() {
-    //     $examInActive = Exam::where('status', 0)->get();
-    //     $examLaunched = Exam::where('status', 1)->get();
-    //     $examFinished = Exam::where('status', 2)->get();
-
-    //     $sumExamInActive = 0;
-    //     $sumExamLaunched = 0;
-    //     $sumExamFinished = 0;
-
-    //     if(isset($examInActive)) $sumExamInActive = count($examInActive);
-    //     if(isset($examLaunched)) $sumExamLaunched = count($examLaunched);
-    //     if(isset($examFinished)) $sumExamFinished = count($examLaunched);
-
-    //     return response()->json([
-    //         'message' => 'Success',
-    //         'data' => [
-    //             "examInActive" => $examInActive,
-    //             "examLaunched" => $examLaunched,
-    //             "examFinished" => $examLaunched,
-    //             "sumExamInActive" => $sumExamInActive,
-    //             "sumExamLaunched" => $sumExamLaunched,
-    //             "sumExamFinished" => $sumExamLaunched
-    //         ]
-    //     ], 200);
-    // }
-
     public function showByClass($class)
-    {   
-        $examInActive = Exam::where('class', $class)->whereNull('starts')->get();
-        $examActive = Exam::where('class', $class)->where('starts', '>=', date('Y-m-d H:i:s'))->where('due', '>=', date('Y-m-d H:i:s'))->get();
-        $examLaunched = Exam::where('class', $class)->where('starts', '<=', date('Y-m-d H:i:s'))->where('due', '>=', date('Y-m-d H:i:s'))->get();
-        $examFinished = Exam::where('class', $class)->where('starts', '<=', date('Y-m-d H:i:s'))->where('due', '<=', date('Y-m-d H:i:s'))->get();
+    {
+        $examInActive = Exam::where('class', $class)->where('status', 'inactive')->get();
+        $examLaunched = Exam::where('class', $class)->where('status', 'launched')->get();
+        $examFinished = Exam::where('class', $class)->where('status', 'finished')->get();
 
         $sumExamInActive = 0;
-        $sumExamActive = 0;
         $sumExamLaunched = 0;
         $sumExamFinished = 0;
 
         if(isset($examInActive)) $sumExamInActive = count($examInActive);
-        if(isset($examActive)) $sumExamActive = count($examActive);
         if(isset($examLaunched)) $sumExamLaunched = count($examLaunched);
         if(isset($examFinished)) $sumExamFinished = count($examFinished);
 
@@ -94,11 +60,9 @@ class ExamController extends Controller
             'message' => 'Success',
             'data' => [
                 "examInActive" => $examInActive,
-                "examActive" => $examActive,
                 "examLaunched" => $examLaunched,
                 "examFinished" => $examFinished,
                 "sumExamInActive" => $sumExamInActive,
-                "sumExamActive" => $sumExamActive,
                 "sumExamLaunched" => $sumExamLaunched,
                 "sumExamFinished" => $sumExamFinished
             ]
@@ -146,7 +110,7 @@ class ExamController extends Controller
     }
 
     public function detail($id) {
-        $exam = Exam::findOrFail($id);
+        $exam = Exam::with(['question'])->findOrFail($id);
         
         return response()->json([
             'message' => 'Success',
@@ -164,8 +128,12 @@ class ExamController extends Controller
             'description' => 'nullable'
         ]);
 
-        $exam = Exam::find($id);
-        if($exam->isAssignOrLaunchOrOver()) return $exam->isAssignOrLaunchOrOver();
+        $exam = Exam::findOrFail($id);
+        if($exam->status != 'inactive') {
+            return response()->json([
+                'message' => 'Exam must be inactive'
+            ], 422);
+        }
 
         if(empty($request->file('thumbnail'))) {
             $exam->update([
@@ -207,9 +175,12 @@ class ExamController extends Controller
 
     public function delete($id)
     {
-        $exam = Exam::find($id);
-        
-        if($exam->isAssignOrLaunch()) return $exam->isAssignOrLaunch();
+        $exam = Exam::findOrFail($id);
+        if($exam->status != 'inactive') {
+            return response()->json([
+                'message' => 'Exam must be inactive'
+            ], 422);
+        }
         
         $exam->delete();
         
@@ -223,18 +194,14 @@ class ExamController extends Controller
 
     public function clone($id)
     {
-        $exam = Exam::find($id);
+        $exam = Exam::findOrFail($id);
         
         $newExam = $exam->replicate();
         $newExam->name = $exam->name."(copy-".rand(111,999).")";
-        $newExam->starts = null;
-        $newExam->due = null;
-        $newExam->hours = null;
-        $newExam->minutes = null;
         $newExam->class = $exam->class;
         $newExam->save();
 
-        foreach ($exam->questions as $question) {
+        foreach ($exam->question as $question) {
             $newQuestion = $question->replicate();
             $newQuestion->exam_id = $newExam->id;
             $newQuestion->save();
@@ -251,13 +218,19 @@ class ExamController extends Controller
         ], 200);
     }
 
-    public function answer($participantId, $quizId)
+    public function answer($studentId, $examId)
     {
-        $categoryById = Category::findOrFail($categoryId);
-        $quizzes = Quiz::with('participantQuizzes.participant')->get();
-        $participant = Participant::with('participantQuizzes')->where('id', $participantId)->first();
-        $answerParticipants = AnswerParticipant::with('quiz', 'question.answerOptions')->where('quiz_id', $quizId)->where('participant_id', $participantId)->get();
-        
-        return view('admin.participant.participant_answer', compact('quizzes', 'quizId', 'participant', 'categoryById', 'answerParticipants'));
+        $exam = Exam::with('studentExam.student')->get();
+        $student = Student::with('studentExam')->where('id', $studentId)->firstOrFail();
+        $answerStudent = AnswerStudent::with('exam', 'question.answerOption')->where('exam_id', $examId)->where('student_id', $studentId)->get();
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => [
+                'exam' => $exam,
+                'student' => $student,
+                'answerStudent' => $answerStudent
+            ]
+        ], 200);
     }
 }

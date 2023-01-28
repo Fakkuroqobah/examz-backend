@@ -53,23 +53,23 @@ class AdminController extends Controller
         return $this->respondWithToken(auth('admin')->refresh());
     }
 
-    // public function teacherAll()
-    // {
-    //     $data = Teacher::all();
+    public function teacherAll()
+    {
+        $data = Teacher::all();
 
-    //     return response()->json([
-    //         'data' => $data,
-    //         'message' => 'Success'
-    //     ], 200);
-    // }
+        return response()->json([
+            'data' => $data,
+            'message' => 'Success'
+        ], 200);
+    }
 
-    // public function studentByClass($class)
-    // {
-    //     $data = Student::where('class', $class)->get();
+    public function studentByClass($class)
+    {
+        $data = Student::where('class', $class)->get();
 
-    //     return response()->json([
-    //         'data' => $data,
-    //         'message' => 'Success'
-    //     ], 200);
-    // }
+        return response()->json([
+            'data' => $data,
+            'message' => 'Success'
+        ], 200);
+    }
 }

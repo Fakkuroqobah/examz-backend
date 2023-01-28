@@ -47,9 +47,8 @@ class AnswerController extends Controller
             ->where('exam_id', $id)
             ->first();
         
-        // Auth::user()->class = 1
-        $exam = Exam::where('starts', '<=', date('Y-m-d H:i:s'))->where('due', '>=', date('Y-m-d H:i:s'))
-            ->where('class', 1)
+        $exam = Exam::where('status', 'inactive')
+            ->where('class', Auth::user()->class)
             ->findOrFail($id);
 
         if($student->is_generate == 0 && $student->status == 0) {
@@ -63,22 +62,16 @@ class AnswerController extends Controller
         }else if($student->status == 1) return abort(404);
         
         $questions = AnswerStudent::select(['answer_student.id', 'answer_student.exam_id', 'answer_student.student_id', 'answer_student.question_id'])
-        ->with(['question.answerOptions' => function($q) {
-            $q->select(['id', 'question_id', 'subject', 'default_answer']);
-        }])->where('student_id', Auth::user()->id)->where('exam_id', $id)->get();
-
-        $newDuration = Exam::getDurations($exam->due, $exam->hours, $exam->minutes);
-        $hours = $newDuration['hour'];
-        $minutes = $newDuration['minutes'];       
+            ->with(['question.answerOption' => function($q) {
+                $q->select(['id', 'question_id', 'subject', 'default_answer']);
+            }])->where('student_id', Auth::user()->id)->where('exam_id', $id)->get();
         
         return response()->json([
             'message' => 'success',
             'data' => [
                 'student' => $student,
                 'exam' => $exam,
-                'questions' => $questions,
-                'hours' => $hours,
-                'minutes' => $minutes
+                'questions' => $questions
             ]
         ], 200);
     }

@@ -8,14 +8,9 @@ class Question extends Model
 {
     protected $guarded = ['id'];
 
-    public function answerOptions()
+    public function answerOption()
     {
         return $this->hasMany('App\Models\AnswerOption');
-    }
-
-    public function type()
-    {
-        return $this->belongsTo('App\Models\Type');
     }
 
     public function exam()

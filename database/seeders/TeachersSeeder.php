@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Supervisor;
+use App\Models\Teacher;
 use Illuminate\Database\Seeder;
 
-class SupervisorsSeeder extends Seeder
+class TeachersSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,13 +14,13 @@ class SupervisorsSeeder extends Seeder
      */
     public function run()
     {
-        $supervisors = [
-            'name' => 'supervisors',
-            'username' => 'supervisors',
+        $teachers = [
+            'name' => 'teacher',
+            'username' => 'teacher',
             'password' => bcrypt('password'),
-            'role' => 'supervisors'
+            'role' => 'teacher'
         ];
         
-        Supervisor::create($supervisors);
+        Teacher::create($teachers);
     }
 }
