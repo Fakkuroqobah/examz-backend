@@ -12,6 +12,7 @@ use App\Models\Student;
 use App\Models\Question;
 use App\Models\Exam;
 use Exception;
+use Storage;
 use File;
 
 class ExamController extends Controller
@@ -72,28 +73,31 @@ class ExamController extends Controller
     public function add(Request $request) {
         $request->validate([
             'name' => 'required|max:30',
-            'thumbnail.*' => 'image|mimes:jpeg,jpg,png|max:2048',
             'class' => 'required',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'thumbnail' => 'nullable',
+            'is_random' => 'required'
         ]);
 
-        if(!empty($request->file('thumbnail'))) {
-            $thumbnail = $request->file('thumbnail');
-            $thumbnailName = time() . Str::random(5) . '.' . $thumbnail->clientExtension();
+        if(!empty($request->thumbnail)) {
+            $thumbnailName = time() . Str::random(5) . "." .$request->thumbnail['extension'];
+            $thumbnailPath = 'exam/' . $thumbnailName;
 
             $exam = Exam::create([
                 'name' => $request->name,
-                'thumbnail' => 'exam/' . $thumbnailName,
+                'thumbnail' => $thumbnailPath,
                 'description' => $request->description,
-                'class' => $request->class
+                'class' => $request->class,
+                'is_random' => ($request->is_random) ? 1 : 0,
             ]);
 
-            $request->thumbnail->move(storage_path('app/public/exam'), $thumbnailName);
+            Storage::disk('public')->put($thumbnailPath, base64_decode($request->thumbnail['byte']));
         }else{
             $exam = Exam::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'class' => $request->class
+                'class' => $request->class,
+                'is_random' => ($request->is_random) ? 1 : 0,
             ]);
         }
 
@@ -114,46 +118,48 @@ class ExamController extends Controller
         
         return response()->json([
             'message' => 'Success',
-            'data' => [
-                'exam' => $exam
-            ]
+            'data' => $exam
         ], 200);
     }
 
     public function edit(Request $request, $id) {
         $request->validate([
             'name' => 'required|max:30',
-            'thumbnail.*' => 'image|mimes:jpeg,jpg,png|max:2048',
             'class' => 'required',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'thumbnail' => 'nullable',
+            'is_random' => 'required'
         ]);
 
         $exam = Exam::findOrFail($id);
         if($exam->status != 'inactive') {
             return response()->json([
-                'message' => 'Exam must be inactive'
+                'message' => 'Ujian harus belum aktif'
             ], 422);
         }
 
-        if(empty($request->file('thumbnail'))) {
+        if(!isset($request->thumbnail)) {
             $exam->update([
                 'name' => $request->name,
                 'description' => $request->description,
-                'class' => $request->class
+                'class' => $request->class,
+                'is_random' => ($request->is_random) ? 1 : 0,
             ]);
         }else {
-            $thumbnail = $request->file('thumbnail');
-            $thumbnailName = time() . Str::random(5) . '.' . $thumbnail->clientExtension();
+            $thumbnailName = time() . Str::random(5) . "." . $request->thumbnail['extension'];
+            $thumbnailPath = 'exam/' . $thumbnailName;
+
             $thumbnailOld = $exam->thumbnail;
 
             $exam->update([
                 'name' => $request->name,
-                'thumbnail' => 'exam/' . $thumbnailName,
+                'thumbnail' => $thumbnailPath,
                 'description' => $request->description,
-                'class' => $request->class
+                'class' => $request->class,
+                'is_random' => ($request->is_random) ? 1 : 0,
             ]);
 
-            $request->thumbnail->move(storage_path('app/public/exam'), $thumbnailName);
+            Storage::disk('public')->put($thumbnailPath, base64_decode($request->thumbnail['byte']));
 
             $old = explode('/', $thumbnailOld);
             if($exam->is_default_image($old)) File::delete('storage/exam/' . end($old));
@@ -167,9 +173,7 @@ class ExamController extends Controller
 
         return response()->json([
             'message' => 'Success',
-            'data' => [
-                'exam' => $exam
-            ]
+            'data' => $exam
         ], 200);
     }
 
@@ -178,7 +182,7 @@ class ExamController extends Controller
         $exam = Exam::findOrFail($id);
         if($exam->status != 'inactive') {
             return response()->json([
-                'message' => 'Exam must be inactive'
+                'message' => 'Ujian harus belum aktif'
             ], 422);
         }
         
@@ -186,32 +190,6 @@ class ExamController extends Controller
         
         $old = explode('/', $exam->thumbnail);
         if($exam->is_default_image($old)) File::delete('storage/exam/' . end($old));
-
-        return response()->json([
-            'message' => 'Success'
-        ], 200);
-    }
-
-    public function clone($id)
-    {
-        $exam = Exam::findOrFail($id);
-        
-        $newExam = $exam->replicate();
-        $newExam->name = $exam->name."(copy-".rand(111,999).")";
-        $newExam->class = $exam->class;
-        $newExam->save();
-
-        foreach ($exam->question as $question) {
-            $newQuestion = $question->replicate();
-            $newQuestion->exam_id = $newExam->id;
-            $newQuestion->save();
-
-            foreach ($question->answerOptions as $answerOption) {
-                $newAnswerOption = $answerOption->replicate();
-                $newAnswerOption->question_id = $newQuestion->id;
-                $newAnswerOption->save();
-            }
-        }
 
         return response()->json([
             'message' => 'Success'

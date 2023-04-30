@@ -20,7 +20,7 @@ class AnswerController extends Controller
         if($exam->is_random == 1) {
             $questions = Question::select(['id', 'exam_id'])->where('exam_id', $id)->inRandomOrder()->get();
         }else{
-            $questions = Question::select(['id', 'exam_id'])->where('exam_id', $id)->orderBy('order_number', 'ASC')->get();
+            $questions = Question::select(['id', 'exam_id'])->where('exam_id', $id)->get();
         }
 
         DB::transaction(function() use ($id, $questions, $student) {

@@ -17,7 +17,6 @@ class CreateQuestionsTabel extends Migration
             $table->increments('id');
             $table->unsignedInteger('exam_id');
             $table->text('subject');
-            $table->tinyInteger('order_number')->nullable();
             $table->timestamps();
 
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');

@@ -60,7 +60,6 @@ Route::prefix('supervisor')->group(function () {
             Route::get('/detail/{id}', [ExamController::class, 'detail']);
             Route::post('/edit/{id}', [ExamController::class, 'edit']);
             Route::delete('/delete/{id}', [ExamController::class, 'delete']);
-            Route::get('/clone/{id}', [ExamController::class, 'clone']);
             Route::post('/launch/{id}', [ExamController::class, 'launch']);
             Route::post('/stop', [ExamController::class, 'stop']);
             Route::get('/answer/{examId}/{studentId}', [ExamController::class, 'answer']);
@@ -68,8 +67,8 @@ Route::prefix('supervisor')->group(function () {
 
         Route::prefix('exam/question')->group(function () {
             Route::get('/{id}', [QuestionController::class, 'index']);
-            Route::get('/{id}/add', [QuestionController::class, 'viewAdd']);
             Route::post('/add', [QuestionController::class, 'add']);
+            Route::post('/edit/{id}', [QuestionController::class, 'edit']);
             Route::delete('/delete/{id}', [QuestionController::class, 'delete']);
         });
     });
