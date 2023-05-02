@@ -18,7 +18,7 @@ class SchedulesImport implements ToModel, WithHeadingRow
         return new Schedule([
             'room_id' => $row['ruangan'],
             'supervisor_id' => $row['pengawas'],
-            'exam_id' => $row['mata ujian'],
+            'exam_id' => $row['mata_ujian'],
         ]);
     }
 }

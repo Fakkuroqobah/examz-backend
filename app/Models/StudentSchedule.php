@@ -9,6 +9,8 @@ class StudentSchedule extends Model
     protected $table = 'student_schedule';
     protected $guarded = [];
 
+    public $timestamps = false;
+
     public function schedule()
     {
         return $this->belongsTo('App\Models\Schedule');

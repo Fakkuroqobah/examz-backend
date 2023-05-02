@@ -14,7 +14,7 @@ class Student extends Authenticatable implements JWTSubject
     protected $guard = 'student';
 
     protected $fillable = [
-        'username', 'password', 'role', 'class'
+        'name', 'username', 'password', 'role', 'class'
     ];
 
     protected $hidden = [
