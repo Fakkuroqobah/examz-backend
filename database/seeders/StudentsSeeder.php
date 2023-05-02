@@ -14,14 +14,32 @@ class StudentsSeeder extends Seeder
      */
     public function run()
     {
-        $student = [
-            'name' => 'student',
-            'class' => '10',
-            'username' => 'student',
-            'password' => bcrypt('password'),
-            'role' => 'student'
+        $students = [
+            [
+                'name' => 'student',
+                'class' => '10',
+                'username' => 'student',
+                'password' => bcrypt('password'),
+                'role' => 'student'
+            ],
+            [
+                'name' => 'student2',
+                'class' => '10',
+                'username' => 'student2',
+                'password' => bcrypt('password'),
+                'role' => 'student'
+            ],
+            [
+                'name' => 'student3',
+                'class' => '10',
+                'username' => 'student3',
+                'password' => bcrypt('password'),
+                'role' => 'student'
+            ],
         ];
-        
-        Student::create($student);
+
+        foreach ($students as $value) {
+            Student::create($value);
+        }
     }
 }

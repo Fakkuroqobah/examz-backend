@@ -18,7 +18,7 @@ class CreateSupervisorsTable extends Migration
             $table->string('name');
             $table->string('username', 30);
             $table->string('password');
-            $table->string('role');
+            $table->string('role')->default('supervisor');
             $table->rememberToken();
             $table->timestamps();
         });

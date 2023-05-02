@@ -15,12 +15,22 @@ class SupervisorsSeeder extends Seeder
     public function run()
     {
         $supervisors = [
-            'name' => 'supervisors',
-            'username' => 'supervisors',
-            'password' => bcrypt('password'),
-            'role' => 'supervisors'
+            [
+                'name' => 'supervisors',
+                'username' => 'supervisors',
+                'password' => bcrypt('password'),
+                'role' => 'supervisors'
+            ],
+            [
+                'name' => 'supervisors2',
+                'username' => 'supervisors2',
+                'password' => bcrypt('password'),
+                'role' => 'supervisors'
+            ]
         ];
         
-        Supervisor::create($supervisors);
+        foreach ($supervisors as $value) {
+            Supervisor::create($value);
+        }
     }
 }

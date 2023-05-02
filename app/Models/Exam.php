@@ -18,11 +18,6 @@ class Exam extends Model
         return true;
     }
 
-    public function studentExam()
-    {
-        return $this->hasMany('App\Models\StudentExam');
-    }
-
     public function question()
     {
         return $this->hasMany('App\Models\Question');

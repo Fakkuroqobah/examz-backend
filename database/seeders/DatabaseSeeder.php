@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
             StudentsSeeder::class,
             SupervisorsSeeder::class,
             TeachersSeeder::class,
+            ExamsSeeder::class,
+            RoomsSeeder::class,
+            SchedulesSeeder::class,
         ]);
     }
 }

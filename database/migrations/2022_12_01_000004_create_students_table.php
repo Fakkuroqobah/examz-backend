@@ -19,7 +19,7 @@ class CreateStudentsTable extends Migration
             $table->string('class', 10);
             $table->string('username', 30);
             $table->string('password');
-            $table->string('role');
+            $table->string('role')->default('student');
             $table->rememberToken();
             $table->timestamps();
         });

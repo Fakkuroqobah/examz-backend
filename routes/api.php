@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ImportController;
 
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Teacher\ExamController;
@@ -46,6 +47,24 @@ Route::prefix('supervisor')->group(function () {
     Route::prefix('admin')->middleware(['assign.guard:admin'])->group(function () {
         Route::get('refresh', [AdminController::class, 'refresh']);
         Route::get('get-user', [AdminController::class, 'getAuthenticatedUser']);
+
+        // GET DATA
+        Route::get('rooms', [ImportController::class, 'getRoom']);
+        Route::get('schedules', [ImportController::class, 'getSchedule']);
+        Route::get('student-schedule', [ImportController::class, 'getStudentSchedule']);
+        Route::get('students', [ImportController::class, 'getStudent']);
+        Route::get('supervisors', [ImportController::class, 'getSupervisor']);
+        Route::get('teachers', [ImportController::class, 'getTeacher']);
+        
+        // Import
+        Route::prefix('import')->group(function () {
+            Route::post('rooms', [ImportController::class, 'importRoom']);
+            Route::post('schedules', [ImportController::class, 'importSchedule']);
+            Route::post('student-schedule', [ImportController::class, 'importStudentSchedule']);
+            Route::post('students', [ImportController::class, 'importStudent']);
+            Route::post('supervisors', [ImportController::class, 'importSupervisor']);
+            Route::post('teachers', [ImportController::class, 'importTeacher']);
+        });
     });
 
     // TEACHER
@@ -57,7 +76,6 @@ Route::prefix('supervisor')->group(function () {
             Route::get('/', [ExamController::class, 'index']);
             Route::get('/class/{class}', [ExamController::class, 'showByClass']);
             Route::post('/add', [ExamController::class, 'add']);
-            Route::get('/detail/{id}', [ExamController::class, 'detail']);
             Route::post('/edit/{id}', [ExamController::class, 'edit']);
             Route::delete('/delete/{id}', [ExamController::class, 'delete']);
             Route::post('/launch/{id}', [ExamController::class, 'launch']);

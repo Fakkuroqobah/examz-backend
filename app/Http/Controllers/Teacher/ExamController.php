@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Models\StudentExam;
 use App\Models\AnswerStudent;
 use App\Models\Student;
 use App\Models\Question;
@@ -76,7 +75,8 @@ class ExamController extends Controller
             'class' => 'required',
             'description' => 'nullable',
             'thumbnail' => 'nullable',
-            'is_random' => 'required'
+            'is_random' => 'required',
+            'time' => 'required',
         ]);
 
         if(!empty($request->thumbnail)) {
@@ -89,6 +89,7 @@ class ExamController extends Controller
                 'description' => $request->description,
                 'class' => $request->class,
                 'is_random' => ($request->is_random) ? 1 : 0,
+                'time' => $request->time,
             ]);
 
             Storage::disk('public')->put($thumbnailPath, base64_decode($request->thumbnail['byte']));
@@ -98,6 +99,7 @@ class ExamController extends Controller
                 'description' => $request->description,
                 'class' => $request->class,
                 'is_random' => ($request->is_random) ? 1 : 0,
+                'time' => $request->time,
             ]);
         }
 
@@ -107,19 +109,11 @@ class ExamController extends Controller
             ], 500);
         }
 
+        $exam = Exam::findOrFail($exam->id);
         return response()->json([
             'message' => 'Success',
             'data' => $exam
         ], 201);
-    }
-
-    public function detail($id) {
-        $exam = Exam::with(['question'])->findOrFail($id);
-        
-        return response()->json([
-            'message' => 'Success',
-            'data' => $exam
-        ], 200);
     }
 
     public function edit(Request $request, $id) {
@@ -128,7 +122,8 @@ class ExamController extends Controller
             'class' => 'required',
             'description' => 'nullable',
             'thumbnail' => 'nullable',
-            'is_random' => 'required'
+            'is_random' => 'required',
+            'time' => 'required',
         ]);
 
         $exam = Exam::findOrFail($id);
@@ -144,6 +139,7 @@ class ExamController extends Controller
                 'description' => $request->description,
                 'class' => $request->class,
                 'is_random' => ($request->is_random) ? 1 : 0,
+                'time' => $request->time,
             ]);
         }else {
             $thumbnailName = time() . Str::random(5) . "." . $request->thumbnail['extension'];
@@ -157,6 +153,7 @@ class ExamController extends Controller
                 'description' => $request->description,
                 'class' => $request->class,
                 'is_random' => ($request->is_random) ? 1 : 0,
+                'time' => $request->time,
             ]);
 
             Storage::disk('public')->put($thumbnailPath, base64_decode($request->thumbnail['byte']));
@@ -171,6 +168,7 @@ class ExamController extends Controller
             ], 500);
         }
 
+        $exam = Exam::findOrFail($exam->id);
         return response()->json([
             'message' => 'Success',
             'data' => $exam
@@ -196,10 +194,10 @@ class ExamController extends Controller
         ], 200);
     }
 
-    public function answer($studentId, $examId)
+    public function answer($examId, $studentId)
     {
-        $exam = Exam::with('studentExam.student')->get();
-        $student = Student::with('studentExam')->where('id', $studentId)->firstOrFail();
+        $exam = Exam::with('studentSchedule.student')->get();
+        $student = Student::with('studentSchedule')->where('id', $studentId)->firstOrFail();
         $answerStudent = AnswerStudent::with('exam', 'question.answerOption')->where('exam_id', $examId)->where('student_id', $studentId)->get();
 
         return response()->json([

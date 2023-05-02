@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Supervisior;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\StudentExam;
 use App\Models\AnswerStudent;
 use App\Models\Student;
 use App\Models\Question;
@@ -43,24 +42,9 @@ class ExamLaunchController extends Controller
                 ], 422);
             }
 
-            DB::transaction(function() use ($request, $exam) {
-                $students = Student::select(['id'])->where('class', $request->class)->get()->toArray();
-                $arr = [];
-
-                foreach ($students as $value) {
-                    $arr[] = [
-                        'exam_id' => $exam->id, 
-                        'student_id' => $value['id']
-                    ];
-                }
-
-                StudentExam::insert($arr);
-
-                $exam->update([
-                    'status' => 'launched',
-                    'is_random' => ($request->random == 'true') ? true : false
-                ]);
-            });
+            $exam->update([
+                'status' => 'launched',
+            ]);
     
             return response()->json([
                 'message' => 'Success'

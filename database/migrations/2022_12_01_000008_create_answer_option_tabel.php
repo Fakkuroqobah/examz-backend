@@ -16,8 +16,8 @@ class CreateAnswerOptionTabel extends Migration
         Schema::create('answer_option', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('question_id');
-            $table->text('subject');
-            $table->text('correct')->nullable();
+            $table->longText('subject');
+            $table->boolean('correct')->default(0);
 
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
         });

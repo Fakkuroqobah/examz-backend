@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Type extends Model
+class Room extends Model
 {
     protected $guarded = ['id'];
-    public $timestamps = false;
 }

@@ -32,8 +32,8 @@ class Student extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function StudentExams()
+    public function StudentSchedules()
     {
-        return $this->hasMany('App\Models\StudentExams');
+        return $this->hasMany('App\Models\StudentSchedule');
     }
 }
