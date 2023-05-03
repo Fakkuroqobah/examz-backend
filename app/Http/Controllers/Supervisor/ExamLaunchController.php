@@ -11,9 +11,9 @@ use App\Models\Question;
 use App\Models\Exam;
 use Exception;
 
-class ExamLaunchController extends Controller
+class ExamStartController extends Controller
 {
-    public function launch($id, Request $request)
+    public function start($id, Request $request)
     {
         $request->validate([
             'class' => 'required'

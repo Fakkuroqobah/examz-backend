@@ -5,13 +5,14 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\Admin\ExamLaunchController;
 
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Teacher\ExamController;
 use App\Http\Controllers\Teacher\QuestionController;
 
 use App\Http\Controllers\Supervisor\SupervisorController;
-use App\Http\Controllers\Supervisior\ExamLaunchController;
+use App\Http\Controllers\Supervisior\ExamStartController;
 
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Student\AnswerController;
@@ -64,6 +65,12 @@ Route::prefix('supervisor')->group(function () {
             Route::post('students', [ImportController::class, 'importStudent']);
             Route::post('supervisors', [ImportController::class, 'importSupervisor']);
             Route::post('teachers', [ImportController::class, 'importTeacher']);
+        });
+
+        // EXAM
+        Route::prefix('exam')->group(function () {
+            Route::get('/', [ExamLaunchController::class, 'index']);
+            Route::post('/trigger/{type}', [ExamLaunchController::class, 'trigger']);
         });
     });
 
