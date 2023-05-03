@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class StudentSchedule extends Model
 {
     protected $table = 'student_schedule';
-    protected $guarded = [];
+    protected $guarded = ['id'];
 
     public $timestamps = false;
 
-    public function schedule()
+    public function room()
     {
-        return $this->belongsTo('App\Models\Schedule');
+        return $this->belongsTo('App\Models\Room');
     }
 
     public function student()

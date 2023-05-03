@@ -59,7 +59,7 @@ class ImportController extends Controller
 
     public function getSchedule()
     {
-        $data = Schedule::all();
+        $data = Schedule::with(['room', 'supervisor', 'exam'])->get();
         return response()->json([
             'message' => 'success',
             'data' => $data
@@ -68,7 +68,7 @@ class ImportController extends Controller
 
     public function getStudentSchedule()
     {
-        $data = StudentSchedule::all();
+        $data = StudentSchedule::with(['room', 'student'])->get();
         return response()->json([
             'message' => 'success',
             'data' => $data
@@ -133,8 +133,8 @@ class ImportController extends Controller
         $last = Schedule::orderBy('id', 'DESC')->first();
         Excel::import(new SchedulesImport, $request->file('excel'));
 
-        if(!is_null($last)) $data = Schedule::where('id', '>', $last->id)->get();
-        else $data = Schedule::all();
+        if(!is_null($last)) $data = Schedule::with(['room', 'supervisor', 'exam'])->where('id', '>', $last->id)->get();
+        else $data = Schedule::with(['room', 'supervisor', 'exam'])->get();
         return response()->json([
             'message' => 'success',
             'data' => $data
@@ -146,8 +146,8 @@ class ImportController extends Controller
         $last = StudentSchedule::orderBy('id', 'DESC')->first();
         Excel::import(new StudentScheduleImport, $request->file('excel'));
 
-        if(!is_null($last)) $data = StudentSchedule::where('id', '>', $last->id)->get();
-        else $data = StudentSchedule::all();
+        if(!is_null($last)) $data = StudentSchedule::with(['room', 'student'])->where('id', '>', $last->id)->get();
+        else $data = StudentSchedule::with(['room', 'student'])->get();
         return response()->json([
             'message' => 'success',
             'data' => $data

@@ -16,7 +16,7 @@ class StudentScheduleImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         return new StudentSchedule([
-            'schedule_id' => $row['jadwal'],
+            'room_id' => $row['ruangan'],
             'student_id' => $row['siswa'],
         ]);
     }
