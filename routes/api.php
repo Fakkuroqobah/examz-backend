@@ -12,7 +12,7 @@ use App\Http\Controllers\Teacher\ExamController;
 use App\Http\Controllers\Teacher\QuestionController;
 
 use App\Http\Controllers\Supervisor\SupervisorController;
-use App\Http\Controllers\Supervisior\ExamStartController;
+use App\Http\Controllers\Supervisor\ExamStartController;
 
 use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Student\AnswerController;
@@ -104,8 +104,9 @@ Route::prefix('supervisor')->group(function () {
         Route::get('get-user', [SupervisorController::class, 'getAuthenticatedUser']);
 
         Route::prefix('exam')->group(function () {
-            Route::post('/launch/{id}', [ExamLaunchController::class, 'launch']);
-            Route::post('/stop', [ExamLaunchController::class, 'stop']);
+            Route::get('/', [ExamStartController::class, 'index']);
+            Route::post('/start/{id}', [ExamStartController::class, 'start']);
+            Route::post('/stop/{id}', [ExamStartController::class, 'stop']);
         });
     });
 
