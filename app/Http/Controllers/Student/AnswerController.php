@@ -65,36 +65,41 @@ class AnswerController extends Controller
 
     public function answer(Request $request)
     {
-        $check = AnswerStudent::where('student_id', Auth::user()->id)->where('question', $request->question_id)->first();
-        if(is_null($check)) {
-            $answerStudent = AnswerStudent::create([
-                'question_id' => $request->question_id,
-                'answer' => $request->answer,
-                'student_id' => Auth::user()->id,
-            ]);
-        }else{
-            $answerStudent->update([
-                'answer' => $request->answer
-            ]);
-        }
+        $check = AnswerStudent::where('student_id', Auth::user()->id)->where('question_id', $request->question_id)->first();
 
-        return response()->json([
-            'message' => 'success'
-        ], 200);
+        try {
+            if(is_null($check)) {
+                $answerStudent = AnswerStudent::create([
+                    'question_id' => $request->question_id,
+                    'answer' => $request->answer,
+                    'student_id' => Auth::user()->id,
+                ]);
+            }else{
+                $check->update([
+                    'answer' => $request->answer
+                ]);
+            }
+    
+            return response()->json([
+                'message' => 'success'
+            ], 200);
+        } catch (Exception $err) {
+            return response()->json([
+                'message' => $err->getMessage()
+            ], 500);
+        }
     }
 
     public function endExam(Request $request)
     {
         try {
-            $data = StudentSchedule::select(['id', 'end_time'])->findOrFail($request->student);
+            $studentSchedule = StudentSchedule::where('student_id', Auth::user()->id)
+            ->whereNull('end_time')
+            ->whereHas('schedule.exam', function($q) use($request) {
+                $q->where('exam_id', $request->exam_id);
+            })->firstOrFail();
 
-            if(!is_null($data->end_time)) {
-                return response()->json([
-                    'message' => 'the test is done'
-                ], 422);
-            }
-
-            $data->update([
+            $studentSchedule->update([
                 'end_time' => now()
             ]);
 
@@ -103,7 +108,7 @@ class AnswerController extends Controller
             ], 200);
         }catch(Exception $err) {
             return response()->json([
-                'message' => "Something went error"
+                'message' => $err->getMessage()
             ], 500);
         }
     }

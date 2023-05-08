@@ -119,6 +119,6 @@ Route::prefix('supervisor')->group(function () {
         Route::get('/exam-finished', [AnswerController::class, 'examFinished']);
         Route::post('/token/{id}', [AnswerController::class, 'token']);
         Route::post('/answer', [AnswerController::class, 'answer']);
-        Route::post('/end-exam', [AnswerController::class, 'Exam']);
+        Route::post('/end-exam', [AnswerController::class, 'endExam']);
     });
 // });
