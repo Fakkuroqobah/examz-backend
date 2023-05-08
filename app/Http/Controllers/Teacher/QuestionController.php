@@ -37,14 +37,15 @@ class QuestionController extends Controller
     {
         if(is_array($arr)) {
             foreach($arr as $value) {
-                $correct;
-                if($value['answer_correct'] == "true") {
-                    $correct = true;
-                }else{
-                    $correct = false;
-                }
+                // $correct;
+                // if($value['answer_correct'] == "true") {
+                //     $correct = true;
+                // }else{
+                //     $correct = false;
+                // }
 
-                if($correct && !empty($value['answer_option'])) return false;
+                // if($correct && !empty($value['answer_option'])) return false;
+                if($value['answer_correct']) return false;
             }
         }
 
@@ -94,17 +95,18 @@ class QuestionController extends Controller
 
             foreach ($answers as $answer) {
                 if(!empty($answer['answer_option'])) {
-                    $correct;
-                    if($answer['answer_correct'] == "true") {
-                        $correct = true;
-                    }else{
-                        $correct = false;
-                    }
+                    // $correct;
+                    // if($answer['answer_correct'] == "true") {
+                    //     $correct = true;
+                    // }else{
+                    //     $correct = false;
+                    // }
 
                     AnswerOption::create([
                         'question_id' => $question->id,
                         'subject' => $answer['answer_option'],
-                        'correct' => ($correct) ? $answer['answer_option'] : null
+                        'correct' => $answer['answer_correct']
+                        // 'correct' => ($correct) ? $answer['answer_option'] : null
                     ]);
                 }
             }
@@ -118,7 +120,7 @@ class QuestionController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
-                'message' => 'Error'
+                'message' => $e->getMessage()
             ], 500);
         }
     }

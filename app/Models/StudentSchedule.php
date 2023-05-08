@@ -11,9 +11,9 @@ class StudentSchedule extends Model
 
     public $timestamps = false;
 
-    public function room()
+    public function schedule()
     {
-        return $this->belongsTo('App\Models\Room');
+        return $this->belongsTo('App\Models\Schedule', 'room_id', 'room_id');
     }
 
     public function student()

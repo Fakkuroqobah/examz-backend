@@ -14,6 +14,19 @@ use Auth;
 
 class ExamStartController extends Controller
 {
+    private function fisherYatesShuffle($limit = 5) {
+        $alphabet = range('a', 'z');
+        $len = count($alphabet);
+        
+        for ($i = $len - 1; $i > 0; $i--) {
+          $j = mt_rand(0, $i);
+          [$alphabet[$i], $alphabet[$j]] = [$alphabet[$j], $alphabet[$i]];
+        }
+        
+        $shuffled = array_slice($alphabet, 0, $limit);
+        return implode('', $shuffled);
+    }
+
     public function index()
     {
         $data = Schedule::with(['exam'])->where('supervisor_id', Auth::guard('supervisor')->user()->id)->whereHas('exam', function($q) {
@@ -57,7 +70,7 @@ class ExamStartController extends Controller
             // }
 
             $data->update([
-                'token' => $this->shuffleAlphabetLimited(),
+                'token' => $this->fisherYatesShuffle(),
             ]);
     
             return response()->json([
@@ -70,19 +83,6 @@ class ExamStartController extends Controller
                 'errors' => ['server' => [$err->getMessage()]]
             ], 404);
         }
-    }
-
-    private function shuffleAlphabetLimited($limit = 5) {
-        $alphabet = range('a', 'z');
-        $len = count($alphabet);
-        
-        for ($i = $len - 1; $i > 0; $i--) {
-          $j = mt_rand(0, $i);
-          [$alphabet[$i], $alphabet[$j]] = [$alphabet[$j], $alphabet[$i]];
-        }
-        
-        $shuffled = array_slice($alphabet, 0, $limit);
-        return implode('', $shuffled);
     }
 
     public function stop(Request $request)

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\AnswerStudent;
 use App\Models\StudentSchedule;
 use App\Models\Question;
+use App\Models\Schedule;
 use App\Models\Exam;
 use Exception;
 use Auth;
@@ -15,18 +16,51 @@ use DateTime;
 
 class AnswerController extends Controller
 {
-    public function exam($id)
+    public function examLaunched()
     {
-        $exam = Exam::with(['question'])->where('status', 'launched')
-            ->where('class', Auth::user()->class)
-            ->findOrFail($id);
-        
+        $data = StudentSchedule::with(['schedule.exam'])
+        ->where('student_id', Auth::user()->id)
+        ->whereNull('end_time')
+        ->whereHas('schedule.exam', function($q) {
+            $q->where('status', 'launched');
+        })->get();
+
         return response()->json([
-            'message' => 'success',
-            'data' => [
-                'exam' => $exam
-            ]
+            'message' => 'Success',
+            'data' => $data
         ], 200);
+    }
+
+    public function examFinished()
+    {
+        $data = StudentSchedule::with(['schedule.exam'])
+        ->where('student_id', Auth::user()->id)
+        ->whereNotNull('end_time')->get();
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => $data
+        ], 200);
+    }
+
+    public function token(Request $request, $id)
+    {
+        $request->validate([
+            'token' => 'required',
+        ]);
+
+        $data = Schedule::where('token', $request->token)->find($id);
+        if(!is_null($data)) {
+            $data = Exam::with(['question.answerOption'])->findOrFail($data->exam_id);
+            return response()->json([
+                'message' => 'Success',
+                'data' => $data
+            ], 200);
+        }else{
+            return response()->json([
+                'message' => 'Error',
+            ], 404);
+        }
     }
 
     public function answer(Request $request)
@@ -52,16 +86,16 @@ class AnswerController extends Controller
     public function endExam(Request $request)
     {
         try {
-            $data = StudentSchedule::select(['id', 'status'])->findOrFail($request->student);
+            $data = StudentSchedule::select(['id', 'end_time'])->findOrFail($request->student);
 
-            if($data->status == 1) {
+            if(!is_null($data->end_time)) {
                 return response()->json([
                     'message' => 'the test is done'
                 ], 422);
             }
 
             $data->update([
-                'status' => 1
+                'end_time' => now()
             ]);
 
             return response()->json([

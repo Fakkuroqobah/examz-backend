@@ -115,7 +115,9 @@ Route::prefix('supervisor')->group(function () {
         Route::get('refresh', [StudentController::class, 'refresh']);
         Route::get('get-user', [StudentController::class, 'getAuthenticatedUser']);
 
-        Route::get('/generate/{id}', [AnswerController::class, 'exam']);
+        Route::get('/exam-launched', [AnswerController::class, 'examLaunched']);
+        Route::get('/exam-finished', [AnswerController::class, 'examFinished']);
+        Route::post('/token/{id}', [AnswerController::class, 'token']);
         Route::post('/answer', [AnswerController::class, 'answer']);
         Route::post('/end-exam', [AnswerController::class, 'Exam']);
     });
