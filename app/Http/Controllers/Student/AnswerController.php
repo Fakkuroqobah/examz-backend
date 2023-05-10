@@ -11,8 +11,8 @@ use App\Models\Question;
 use App\Models\Schedule;
 use App\Models\Exam;
 use Exception;
-use Auth;
 use DateTime;
+use Auth;
 
 class AnswerController extends Controller
 {
@@ -51,10 +51,21 @@ class AnswerController extends Controller
 
         $data = Schedule::where('token', $request->token)->find($id);
         if(!is_null($data)) {
-            $data = Exam::with(['question.answerOption'])->findOrFail($data->exam_id);
+            $exam = Exam::with(['question.answerOption'])->findOrFail($data->exam_id);
+
+            $studentSchedule = StudentSchedule::where('student_id', Auth::user()->id)
+            ->whereNull('end_time')
+            ->whereHas('schedule.exam', function($q) use($data) {
+                $q->where('exam_id', $data->exam_id);
+            })->firstOrFail();
+
+            $studentSchedule->update([
+                'start_time' => now()
+            ]);
+
             return response()->json([
                 'message' => 'Success',
-                'data' => $data
+                'data' => $exam
             ], 200);
         }else{
             return response()->json([
@@ -106,6 +117,58 @@ class AnswerController extends Controller
             return response()->json([
                 'message' => 'success'
             ], 200);
+        }catch(Exception $err) {
+            return response()->json([
+                'message' => $err->getMessage()
+            ], 500);
+        }
+    }
+
+    public function block(Request $request)
+    {
+        try {
+            $studentSchedule = StudentSchedule::where('student_id', Auth::user()->id)
+            ->whereNull('end_time')
+            ->whereHas('schedule.exam', function($q) use($request) {
+                $q->where('exam_id', $request->exam_id);
+            })->firstOrFail();
+
+            $studentSchedule->update([
+                'block' => $this->fisherYatesShuffle()
+            ]);
+
+            return response()->json([
+                'message' => 'success'
+            ], 200);
+        }catch(Exception $err) {
+            return response()->json([
+                'message' => $err->getMessage()
+            ], 500);
+        }
+    }
+
+    public function openBlock(Request $request)
+    {
+        try {
+            $studentSchedule = StudentSchedule::where('student_id', Auth::user()->id)
+            ->whereNull('end_time')
+            ->whereHas('schedule.exam', function($q) use($request) {
+                $q->where('exam_id', $request->exam_id);
+            })->firstOrFail();
+
+            if($studentSchedule->block == $request->block) {
+                $studentSchedule->update([
+                    'block' => null
+                ]);
+
+                return response()->json([
+                    'message' => 'Success'
+                ], 200);
+            }else{
+                return response()->json([
+                    'message' => "Error"
+                ], 404);
+            }
         }catch(Exception $err) {
             return response()->json([
                 'message' => $err->getMessage()

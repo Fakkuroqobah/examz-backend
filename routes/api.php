@@ -120,5 +120,7 @@ Route::prefix('supervisor')->group(function () {
         Route::post('/token/{id}', [AnswerController::class, 'token']);
         Route::post('/answer', [AnswerController::class, 'answer']);
         Route::post('/end-exam', [AnswerController::class, 'endExam']);
+        Route::post('/block', [AnswerController::class, 'block']);
+        Route::post('/open-block', [AnswerController::class, 'openBlock']);
     });
 // });
