@@ -17,11 +17,12 @@ class CreateAnswerStudentTabel extends Migration
             $table->increments('id');
             $table->unsignedInteger('student_id');
             $table->unsignedInteger('question_id');
-            $table->boolean('answer')->default(0);
+            $table->unsignedInteger('answer_option_id');
             $table->timestamps();
 
             $table->foreign('student_id')->references('id')->on('students');
-            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
+            $table->foreign('question_id')->references('id')->on('questions');
+            $table->foreign('answer_option_id')->references('id')->on('answer_option');
         });
     }
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ExamLaunchController;
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Teacher\ExamController;
 use App\Http\Controllers\Teacher\QuestionController;
+use App\Http\Controllers\Teacher\StudentRatedController;
 
 use App\Http\Controllers\Supervisor\SupervisorController;
 use App\Http\Controllers\Supervisor\ExamStartController;
@@ -95,6 +96,12 @@ Route::prefix('supervisor')->group(function () {
             Route::post('/add', [QuestionController::class, 'add']);
             Route::post('/edit/{id}', [QuestionController::class, 'edit']);
             Route::delete('/delete/{id}', [QuestionController::class, 'delete']);
+        });
+
+        Route::prefix('rated')->group(function () {
+            Route::get('/', [StudentRatedController::class, 'index']);
+            Route::get('/student/{id}/{class}', [StudentRatedController::class, 'detailStudent']);
+            Route::get('/student-detail/{studentId}/{examId}', [StudentRatedController::class, 'detailRated']);
         });
     });
 

@@ -13,40 +13,14 @@ use App\Models\Exam;
 use Exception;
 use Storage;
 use File;
+use Auth;
 
 class ExamController extends Controller
 {
     public function index() {
-        $examInActive = Exam::where('status', 'inactive')->get();
-        $examLaunched = Exam::where('status', 'launched')->get();
-        $examFinished = Exam::where('status', 'finished')->get();
-
-        $sumExamInActive = 0;
-        $sumExamLaunched = 0;
-        $sumExamFinished = 0;
-
-        if(isset($examInActive)) $sumExamInActive = count($examInActive);
-        if(isset($examLaunched)) $sumExamLaunched = count($examLaunched);
-        if(isset($examFinished)) $sumExamFinished = count($examFinished);
-
-        return response()->json([
-            'message' => 'Success',
-            'data' => [
-                "examInActive" => $examInActive,
-                "examLaunched" => $examLaunched,
-                "examFinished" => $examFinished,
-                "sumExamInActive" => $sumExamInActive,
-                "sumExamLaunched" => $sumExamLaunched,
-                "sumExamFinished" => $sumExamFinished
-            ]
-        ], 200);
-    }
-
-    public function showByClass($class)
-    {
-        $examInActive = Exam::where('class', $class)->where('status', 'inactive')->get();
-        $examLaunched = Exam::where('class', $class)->where('status', 'launched')->get();
-        $examFinished = Exam::where('class', $class)->where('status', 'finished')->get();
+        $examInActive = Exam::where('status', 'inactive')->where('teacher_id', Auth::guard('teacher')->user()->id)->get();
+        $examLaunched = Exam::where('status', 'launched')->where('teacher_id', Auth::guard('teacher')->user()->id)->get();
+        $examFinished = Exam::where('status', 'finished')->where('teacher_id', Auth::guard('teacher')->user()->id)->get();
 
         $sumExamInActive = 0;
         $sumExamLaunched = 0;
@@ -90,6 +64,7 @@ class ExamController extends Controller
                 'class' => $request->class,
                 'is_random' => ($request->is_random) ? 1 : 0,
                 'time' => $request->time,
+                'teacher_id' => Auth::guard('teacher')->user()->id
             ]);
 
             Storage::disk('public')->put($thumbnailPath, base64_decode($request->thumbnail['byte']));
@@ -100,6 +75,7 @@ class ExamController extends Controller
                 'class' => $request->class,
                 'is_random' => ($request->is_random) ? 1 : 0,
                 'time' => $request->time,
+                'teacher_id' => Auth::guard('teacher')->user()->id
             ]);
         }
 
@@ -177,7 +153,7 @@ class ExamController extends Controller
 
     public function delete($id)
     {
-        $exam = Exam::findOrFail($id);
+        $exam = Exam::where('teacher_id', Auth::guard('teacher')->user()->id)->findOrFail($id);
         if($exam->status != 'inactive') {
             return response()->json([
                 'message' => 'Ujian harus belum aktif'

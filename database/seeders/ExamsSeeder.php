@@ -23,6 +23,7 @@ class ExamsSeeder extends Seeder
                 'thumbnail' => 'exam/exam_image.png',
                 'description' => '<p>Laravel is a web application framework with expressive, elegant syntax.</p>',
                 'time' => 1,
+                'teacher_id' => 1
             ],
             [
                 'class' => '10',
@@ -32,6 +33,7 @@ class ExamsSeeder extends Seeder
                 'thumbnail' => 'exam/exam_image.png',
                 'description' => '<p>Laravel is a web application framework with expressive, elegant syntax.</p>',
                 'time' => 1,
+                'teacher_id' => 1
             ],
             [
                 'class' => '11',
@@ -41,6 +43,7 @@ class ExamsSeeder extends Seeder
                 'thumbnail' => 'exam/exam_image.png',
                 'description' => '<p>Laravel is a web application framework with expressive, elegant syntax.</p>',
                 'time' => 1,
+                'teacher_id' => 1
             ],
         ];
 

@@ -22,7 +22,11 @@ class CreateExamsTabel extends Migration
             $table->string('thumbnail')->default('exam/exam_image.png');
             $table->text('description')->nullable();
             $table->integer('time')->comment('minutes');
+            $table->boolean('is_rated')->default(0);
+            $table->unsignedInteger('teacher_id');
             $table->timestamps();
+
+            $table->foreign('teacher_id')->references('id')->on('teachers');
         });
     }
 

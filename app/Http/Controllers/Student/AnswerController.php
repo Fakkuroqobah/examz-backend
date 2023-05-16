@@ -51,7 +51,12 @@ class AnswerController extends Controller
 
         $data = Schedule::where('token', $request->token)->find($id);
         if(!is_null($data)) {
-            $exam = Exam::with(['question.answerOption'])->findOrFail($data->exam_id);
+            $exam = Exam::with('question.answerOption')->findOrFail($data->exam_id);
+            if($exam->is_random == 1) {
+                $exam = Exam::with(['question' => function($q) {
+                    $q->inRandomOrder();
+                }, 'question.answerOption'])->findOrFail($data->exam_id);
+            }
 
             $studentSchedule = StudentSchedule::where('student_id', Auth::user()->id)
             ->whereNull('end_time')
@@ -82,12 +87,12 @@ class AnswerController extends Controller
             if(is_null($check)) {
                 $answerStudent = AnswerStudent::create([
                     'question_id' => $request->question_id,
-                    'answer' => $request->answer,
+                    'answer_option_id ' => $request->answer_option_id ,
                     'student_id' => Auth::user()->id,
                 ]);
             }else{
                 $check->update([
-                    'answer' => $request->answer
+                    'answer_option_id ' => $request->answer_option_id 
                 ]);
             }
     

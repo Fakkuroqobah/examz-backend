@@ -21,7 +21,7 @@ class CreateStudentScheduleTable extends Migration
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();
 
-            $table->foreign('room_id')->references('room_id')->on('schedules')->onDelete('cascade');
+            $table->foreign('room_id')->references('room_id')->on('schedules');
             $table->foreign('student_id')->references('id')->on('students');
         });
     }
