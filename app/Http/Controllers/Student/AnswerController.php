@@ -12,6 +12,7 @@ use App\Models\Schedule;
 use App\Models\Exam;
 use Exception;
 use DateTime;
+use DateInterval;
 use Auth;
 
 class AnswerController extends Controller
@@ -68,6 +69,22 @@ class AnswerController extends Controller
                 'start_time' => now()
             ]);
 
+            $databaseDateTime = $data->updated_at;
+            $minutesToAdd = $exam->time;
+            $databaseTime = DateTime::createFromFormat('Y-m-d H:i:s', $databaseDateTime);
+            $updatedTime = clone $databaseTime;
+            $updatedTime->add(new DateInterval("PT" . $minutesToAdd . "M"));
+
+            $currentDateTime = new DateTime();
+            $diff = $currentDateTime->diff($updatedTime);
+            $remainingMinutes = $diff;
+
+            if($currentDateTime < $updatedTime) {
+                $exam['remaining_time'] = $remainingMinutes->i;
+            }else{
+                $exam['remaining_time'] = 0;
+            }
+
             return response()->json([
                 'message' => 'Success',
                 'data' => $exam
@@ -87,12 +104,12 @@ class AnswerController extends Controller
             if(is_null($check)) {
                 $answerStudent = AnswerStudent::create([
                     'question_id' => $request->question_id,
-                    'answer_option_id ' => $request->answer_option_id ,
+                    'answer_option_id' => $request->answer_option_id,
                     'student_id' => Auth::user()->id,
                 ]);
             }else{
                 $check->update([
-                    'answer_option_id ' => $request->answer_option_id 
+                    'answer_option_id' => $request->answer_option_id 
                 ]);
             }
     
