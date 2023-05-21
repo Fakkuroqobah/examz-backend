@@ -3,18 +3,11 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Models\AnswerStudent;
 use App\Models\StudentSchedule;
-use App\Models\Student;
 use App\Models\Question;
 use App\Models\AnswerOption;
 use App\Models\Exam;
-use Exception;
-use Storage;
-use File;
 use Auth;
 
 class StudentRatedController extends Controller

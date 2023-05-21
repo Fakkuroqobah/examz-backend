@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\AnswerStudent;
+use App\Models\AnswerOption;
 use App\Models\StudentSchedule;
-use App\Models\Question;
 use App\Models\Schedule;
+use App\Models\Question;
 use App\Models\Exam;
 use Exception;
 use DateTime;
@@ -41,6 +42,42 @@ class AnswerController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $data
+        ], 200);
+    }
+
+    public function rated($id)
+    {
+        $totalCorrect = 0;
+        $answerStudent = AnswerStudent::where('student_id', Auth::user()->id)
+        ->whereHas('question', function($q) use($id) {
+            $q->where('exam_id', $id);
+        })->orderBy('question_id', 'ASC')->get();
+
+        foreach ($answerStudent as $value) {
+            $answerOption = AnswerOption::find($value->answer_option_id);
+            if($answerOption->correct == 1) {
+                $totalCorrect++;
+            }
+        }
+
+        $questions = Question::with(['answerOption'])->where('exam_id', $id)->get();
+        foreach ($questions as $value) {
+            $value['answer'] = 0;
+            foreach ($answerStudent as $row) {
+                if($row->question_id == $value->id) {
+                    $value['answer'] = $row->answer_option_id;
+                    break;
+                }
+            }
+        }
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => [
+                'total' => $totalCorrect,
+                'answer_student' => $answerStudent,
+                'questions' => $questions
+            ]
         ], 200);
     }
 
