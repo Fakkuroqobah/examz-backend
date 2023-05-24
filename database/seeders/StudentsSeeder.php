@@ -20,6 +20,7 @@ class StudentsSeeder extends Seeder
                 'class' => '10',
                 'username' => 'student',
                 'password' => bcrypt('password'),
+                'room_id' => 1,
                 'role' => 'student'
             ],
             [
@@ -27,6 +28,7 @@ class StudentsSeeder extends Seeder
                 'class' => '10',
                 'username' => 'student2',
                 'password' => bcrypt('password'),
+                'room_id' => 1,
                 'role' => 'student'
             ],
             [
@@ -34,6 +36,7 @@ class StudentsSeeder extends Seeder
                 'class' => '10',
                 'username' => 'student3',
                 'password' => bcrypt('password'),
+                'room_id' => 1,
                 'role' => 'student'
             ],
         ];

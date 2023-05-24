@@ -13,7 +13,7 @@ class StudentSchedule extends Model
 
     public function schedule()
     {
-        return $this->belongsTo('App\Models\Schedule', 'room_id', 'room_id');
+        return $this->belongsTo('App\Models\Schedule');
     }
 
     public function student()

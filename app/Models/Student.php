@@ -14,7 +14,7 @@ class Student extends Authenticatable implements JWTSubject
     protected $guard = 'student';
 
     protected $fillable = [
-        'name', 'username', 'password', 'role', 'class'
+        'name', 'username', 'password', 'role', 'class', 'room_id'
     ];
 
     protected $hidden = [
@@ -30,6 +30,11 @@ class Student extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function room()
+    {
+        return $this->belongsTo('App\Models\Room');
     }
 
     public function StudentSchedules()

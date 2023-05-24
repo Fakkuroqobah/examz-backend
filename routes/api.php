@@ -115,6 +115,10 @@ Route::prefix('supervisor')->group(function () {
             Route::post('/start/{id}', [ExamStartController::class, 'start']);
             Route::post('/stop/{id}', [ExamStartController::class, 'stop']);
         });
+
+        Route::prefix('student')->group(function () {
+            Route::get('/{id}', [ExamStartController::class, 'student']);
+        });
     });
 
     // STUDENT

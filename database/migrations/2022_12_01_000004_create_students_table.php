@@ -20,8 +20,11 @@ class CreateStudentsTable extends Migration
             $table->string('username', 30);
             $table->string('password');
             $table->string('role')->default('student');
+            $table->unsignedInteger('room_id');
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreign('room_id')->references('id')->on('rooms');
         });
     }
 

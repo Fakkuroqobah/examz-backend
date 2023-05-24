@@ -21,7 +21,7 @@ class SchedulesSeeder extends Seeder
                 'exam_id' => '1',
             ],
             [
-                'room_id' => '2',
+                'room_id' => '1',
                 'supervisor_id' => '2',
                 'exam_id' => '2',
             ],

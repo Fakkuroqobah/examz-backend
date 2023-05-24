@@ -40,7 +40,7 @@ class AdminController extends Controller
     {
         auth('admin')->logout();
         
-        return response()->json(['message' => 'success'], 500);
+        return response()->json(['message' => 'success'], 200);
     }
 
     public function getAuthenticatedUser()

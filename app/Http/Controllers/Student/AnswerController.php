@@ -20,12 +20,34 @@ class AnswerController extends Controller
 {
     public function examLaunched()
     {
-        $data = StudentSchedule::with(['schedule.exam'])
-        ->where('student_id', Auth::user()->id)
-        ->whereNull('end_time')
-        ->whereHas('schedule.exam', function($q) {
-            $q->where('status', 'launched');
-        })->get();
+        // $check = StudentSchedule::where('student_id', Auth::user()->id)->whereNotNull('end_time')->get();
+        // $id = [];
+
+        // foreach ($check as $value) {
+        //     $id[] = $value->id;
+        // }
+
+        $data = Schedule::with(['exam'])
+        ->where('room_id', Auth::user()->room_id)
+        ->whereHas('exam', function($q) {
+            $q->where('class', Auth::user()->class)->where('status', 'launched');
+        })
+        // ->whereHas('studentSchedule', function($q) {
+        //     $q->where('student_id', Auth::user()->id)->whereNull('end_time');
+        // })
+        ->get();
+
+        // $data = [];
+        // for($i = 0; $i < count($fetch); $i++) {
+        //     $data[] = $fetch[$i];
+        //     if(!is_null($fetch[$i]->student_schedule)) {
+        //         if(is_null($fetch[$i]->student_schedule->end_time)) {
+        //             $data[] = $fetch[$i];
+        //         }else{
+        //             $data[$i] = [];
+        //         }
+        //     }
+        // }
 
         return response()->json([
             'message' => 'Success',
@@ -96,31 +118,29 @@ class AnswerController extends Controller
                 }, 'question.answerOption'])->findOrFail($data->exam_id);
             }
 
-            $studentSchedule = StudentSchedule::where('student_id', Auth::user()->id)
-            ->whereNull('end_time')
-            ->whereHas('schedule.exam', function($q) use($data) {
-                $q->where('exam_id', $data->exam_id);
-            })->firstOrFail();
-
-            $studentSchedule->update([
+            StudentSchedule::create([
+                'schedule_id' => $data->id,
+                'student_id' => Auth::user()->id,
                 'start_time' => now()
             ]);
 
-            $databaseDateTime = $data->updated_at;
-            $minutesToAdd = $exam->time;
-            $databaseTime = DateTime::createFromFormat('Y-m-d H:i:s', $databaseDateTime);
-            $updatedTime = clone $databaseTime;
-            $updatedTime->add(new DateInterval("PT" . $minutesToAdd . "M"));
+            // $databaseDateTime = $data->updated_at;
+            // $minutesToAdd = $exam->time;
+            // $databaseTime = DateTime::createFromFormat('Y-m-d H:i:s', $databaseDateTime);
+            // $updatedTime = clone $databaseTime;
+            // $updatedTime->add(new DateInterval("PT" . $minutesToAdd . "M"));
 
-            $currentDateTime = new DateTime();
-            $diff = $currentDateTime->diff($updatedTime);
-            $remainingMinutes = $diff;
+            // $currentDateTime = new DateTime();
+            // $diff = $currentDateTime->diff($updatedTime);
+            // $remainingMinutes = $diff;
 
-            if($currentDateTime < $updatedTime) {
-                $exam['remaining_time'] = $remainingMinutes->i;
-            }else{
-                $exam['remaining_time'] = 0;
-            }
+            // if($currentDateTime < $updatedTime) {
+            //     $exam['remaining_time'] = $remainingMinutes->i;
+            // }else{
+            //     $exam['remaining_time'] = 0;
+            // }
+
+            $exam['remaining_time'] = $exam->time;
 
             return response()->json([
                 'message' => 'Success',

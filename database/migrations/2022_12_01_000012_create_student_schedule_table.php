@@ -15,13 +15,13 @@ class CreateStudentScheduleTable extends Migration
     {
         Schema::create('student_schedule', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('room_id');
+            $table->unsignedInteger('schedule_id');
             $table->unsignedInteger('student_id');
             $table->string('block', 5)->nullable();
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();
 
-            $table->foreign('room_id')->references('room_id')->on('schedules');
+            $table->foreign('schedule_id')->references('id')->on('schedules');
             $table->foreign('student_id')->references('id')->on('students');
         });
     }

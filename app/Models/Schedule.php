@@ -22,4 +22,9 @@ class Schedule extends Model
     {
         return $this->belongsTo('App\Models\Exam');
     }
+
+    public function studentSchedule()
+    {
+        return $this->hasOne('App\Models\StudentSchedule');
+    }
 }
