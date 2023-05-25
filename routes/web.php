@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/link', function () {
+    $target = '/home/sklhlati/public_html/storage/app/public';
+    $shortcut = '/home/sklhlati/public_html/public/storage';
+    symlink($target, $shortcut);
+});

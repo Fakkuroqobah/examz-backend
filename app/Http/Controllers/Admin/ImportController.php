@@ -68,7 +68,7 @@ class ImportController extends Controller
 
     public function getStudentSchedule()
     {
-        $data = StudentSchedule::with(['room', 'student'])->get();
+        $data = StudentSchedule::with(['schedule', 'student'])->get();
         return response()->json([
             'message' => 'success',
             'data' => $data

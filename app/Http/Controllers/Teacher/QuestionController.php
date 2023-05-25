@@ -169,17 +169,18 @@ class QuestionController extends Controller
             AnswerOption::where('question_id', $id)->delete();
             foreach ($answers as $answer) {
                 if(!empty($answer['answer_option'])) {
-                    $correct;
-                    if($answer['answer_correct'] == "true") {
-                        $correct = true;
-                    }else{
-                        $correct = false;
-                    }
+                    // $correct;
+                    // if($answer['answer_correct'] == "true") {
+                    //     $correct = true;
+                    // }else{
+                    //     $correct = false;
+                    // }
 
                     AnswerOption::create([
                         'question_id' => $question->id,
                         'subject' => $answer['answer_option'],
-                        'correct' => ($correct) ? $answer['answer_option'] : null
+			            'correct' => $answer['answer_correct']
+                        // 'correct' => ($correct) ? $answer['answer_option'] : null
                     ]);
                 }
             }
