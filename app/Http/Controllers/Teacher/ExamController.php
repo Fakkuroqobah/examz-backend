@@ -53,9 +53,10 @@ class ExamController extends Controller
             'time' => 'required',
         ]);
 
-        if(!empty($request->thumbnail)) {
-            $thumbnailName = time() . Str::random(5) . "." .$request->thumbnail['extension'];
-            $thumbnailPath = 'exam/' . $thumbnailName;
+        if($request->hasFile('thumbnail')) {
+            $image = $request->file('thumbnail');
+            $imageName = time() . Str::random(5) . "." . $image->extension();
+            $thumbnailPath = 'exam/' . $imageName;
 
             $exam = Exam::create([
                 'name' => $request->name,
@@ -67,10 +68,11 @@ class ExamController extends Controller
                 'teacher_id' => Auth::guard('teacher')->user()->id
             ]);
 
-            Storage::disk('public')->put($thumbnailPath, base64_decode($request->thumbnail['byte']));
+            $image->move(public_path('storage/exam'), $imageName);
         }else{
             $exam = Exam::create([
                 'name' => $request->name,
+                'thumbnail' => 'exam/exam_image.png',
                 'description' => $request->description,
                 'class' => $request->class,
                 'is_random' => ($request->is_random) ? 1 : 0,
@@ -112,14 +114,16 @@ class ExamController extends Controller
         if(!isset($request->thumbnail)) {
             $exam->update([
                 'name' => $request->name,
+                'thumbnail' => 'exam/exam_image.png',
                 'description' => $request->description,
                 'class' => $request->class,
                 'is_random' => ($request->is_random) ? 1 : 0,
                 'time' => $request->time,
             ]);
         }else {
-            $thumbnailName = time() . Str::random(5) . "." . $request->thumbnail['extension'];
-            $thumbnailPath = 'exam/' . $thumbnailName;
+            $image = $request->file('thumbnail');
+            $imageName = time() . Str::random(5) . "." . $image->extension();
+            $thumbnailPath = 'exam/' . $imageName;
 
             $thumbnailOld = $exam->thumbnail;
 
@@ -132,7 +136,7 @@ class ExamController extends Controller
                 'time' => $request->time,
             ]);
 
-            Storage::disk('public')->put($thumbnailPath, base64_decode($request->thumbnail['byte']));
+            $image->move(public_path('storage/exam'), $imageName);
 
             $old = explode('/', $thumbnailOld);
             if($exam->is_default_image($old)) File::delete('storage/exam/' . end($old));
