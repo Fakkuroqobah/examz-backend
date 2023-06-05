@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ExamLaunchController;
+use App\Http\Controllers\Admin\EditController;
 
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Teacher\ExamController;
@@ -60,12 +61,20 @@ Route::prefix('supervisor')->group(function () {
         
         // Import
         Route::prefix('import')->group(function () {
-            Route::post('rooms', [ImportController::class, 'importRoom']);
-            Route::post('schedules', [ImportController::class, 'importSchedule']);
-            Route::post('student-schedule', [ImportController::class, 'importStudentSchedule']);
-            Route::post('students', [ImportController::class, 'importStudent']);
-            Route::post('supervisors', [ImportController::class, 'importSupervisor']);
-            Route::post('teachers', [ImportController::class, 'importTeacher']);
+            Route::post('/rooms', [ImportController::class, 'importRoom']);
+            Route::post('/schedules', [ImportController::class, 'importSchedule']);
+            Route::post('/student-schedule', [ImportController::class, 'importStudentSchedule']);
+            Route::post('/students', [ImportController::class, 'importStudent']);
+            Route::post('/supervisors', [ImportController::class, 'importSupervisor']);
+            Route::post('/teachers', [ImportController::class, 'importTeacher']);
+        });
+
+        // Edit
+        Route::prefix('edit')->group(function () {
+            Route::post('teacher/{id}', [EditController::class, 'editTeacher']);
+            Route::post('student/{id}', [EditController::class, 'editStudent']);
+            Route::post('supervisor/{id}', [EditController::class, 'editSupervisor']);
+            Route::post('room/{id}', [EditController::class, 'editRoom']);
         });
 
         // EXAM
