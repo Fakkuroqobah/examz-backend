@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ExamLaunchController;
 use App\Http\Controllers\Admin\EditController;
+use App\Http\Controllers\Admin\DeleteController;
 
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Teacher\ExamController;
@@ -59,7 +60,7 @@ Route::prefix('supervisor')->group(function () {
         Route::get('supervisors', [ImportController::class, 'getSupervisor']);
         Route::get('teachers', [ImportController::class, 'getTeacher']);
         
-        // Import
+        // IMPORT
         Route::prefix('import')->group(function () {
             Route::post('/rooms', [ImportController::class, 'importRoom']);
             Route::post('/schedules', [ImportController::class, 'importSchedule']);
@@ -69,12 +70,21 @@ Route::prefix('supervisor')->group(function () {
             Route::post('/teachers', [ImportController::class, 'importTeacher']);
         });
 
-        // Edit
+        // EDIT
         Route::prefix('edit')->group(function () {
             Route::post('teacher/{id}', [EditController::class, 'editTeacher']);
             Route::post('student/{id}', [EditController::class, 'editStudent']);
             Route::post('supervisor/{id}', [EditController::class, 'editSupervisor']);
             Route::post('room/{id}', [EditController::class, 'editRoom']);
+        });
+
+        // DELETE
+        Route::prefix('delete')->group(function () {
+            Route::delete('teacher/{id}', [DeleteController::class, 'deleteTeacher']);
+            Route::delete('student/{id}', [DeleteController::class, 'deleteStudent']);
+            Route::delete('supervisor/{id}', [DeleteController::class, 'deleteSupervisor']);
+            Route::delete('room/{id}', [DeleteController::class, 'deleteRoom']);
+            Route::delete('schedule/{id}', [DeleteController::class, 'deleteSchedule']);
         });
 
         // EXAM
