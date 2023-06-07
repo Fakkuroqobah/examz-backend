@@ -12,6 +12,7 @@ use App\Models\Room;
 class EditController extends Controller {
     public function editTeacher(Request $request, $id) {
         $request->validate([
+            'code' => 'required|max:3',
             'name' => 'required|max:255',
             'username' => 'required|max:30',
             'password' => 'nullable',
@@ -20,12 +21,14 @@ class EditController extends Controller {
         $data = Teacher::findOrFail($id);
         if(isset($request->password) && !empty(trim($request->password))) {
             $data->update([
+                'code' => $request->code,
                 'name' => $request->name,
                 'username' => $request->username,
                 'password' => bcrypt($request->password),
             ]);
         }else{
             $data->update([
+                'code' => $request->code,
                 'name' => $request->name,
                 'username' => $request->username
             ]);
@@ -45,6 +48,7 @@ class EditController extends Controller {
 
     public function editStudent(Request $request, $id) {
         $request->validate([
+            'nis' => 'required|max:10',
             'name' => 'required|max:255',
             'class' => 'required',
             'username' => 'required|max:30',
@@ -54,6 +58,7 @@ class EditController extends Controller {
         $data = Student::findOrFail($id);
         if(isset($request->password) && !empty(trim($request->password))) {
             $data->update([
+                'nis' => $request->nis,
                 'name' => $request->name,
                 'class' => $request->class,
                 'username' => $request->username,
@@ -61,6 +66,7 @@ class EditController extends Controller {
             ]);
         }else{
             $data->update([
+                'nis' => $request->nis,
                 'name' => $request->name,
                 'class' => $request->class,
                 'username' => $request->username
@@ -81,6 +87,7 @@ class EditController extends Controller {
 
     public function editSupervisor(Request $request, $id) {
         $request->validate([
+            'code' => 'required|max:3',
             'name' => 'required|max:255',
             'username' => 'required|max:30',
             'password' => 'nullable',
@@ -89,12 +96,14 @@ class EditController extends Controller {
         $data = Supervisor::findOrFail($id);
         if(isset($request->password) && !empty(trim($request->password))) {
             $data->update([
+                'code' => $request->code,
                 'name' => $request->name,
                 'username' => $request->username,
                 'password' => bcrypt($request->password),
             ]);
         }else{
             $data->update([
+                'code' => $request->code,
                 'name' => $request->name,
                 'username' => $request->username
             ]);

@@ -15,6 +15,7 @@ class TeachersSeeder extends Seeder
     public function run()
     {
         $teachers = [
+            'code' => '1',
             'name' => 'teacher',
             'username' => 'teacher',
             'password' => bcrypt('password'),

@@ -5,6 +5,8 @@ namespace App\Imports;
 use App\Models\Schedule;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use App\Models\Room;
+use App\Models\Supervisor;
 
 class SchedulesImport implements ToModel, WithHeadingRow
 {
@@ -15,10 +17,13 @@ class SchedulesImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
+        $room = Room::where('name', $row['ruangan'])->firstOrFail();
+        $supervisor = Supervisor::where('code', $row['kode_pengawas'])->firstOrFail();
+
         return new Schedule([
-            'room_id' => $row['ruangan'],
-            'supervisor_id' => $row['pengawas'],
-            'exam_id' => $row['mata_ujian'],
+            'room_id' => $room->id,
+            'supervisor_id' => $supervisor->id,
+            'exam_id' => $row['id_mata_ujian'],
         ]);
     }
 }

@@ -14,7 +14,7 @@ class Supervisor extends Authenticatable implements JWTSubject
     protected $guard = 'supervisor';
 
     protected $fillable = [
-        'name', 'username', 'password', 'role'
+        'code', 'name', 'username', 'password', 'role'
     ];
 
     protected $hidden = [

@@ -16,6 +16,7 @@ class StudentsSeeder extends Seeder
     {
         $students = [
             [
+                'nis' => '111',
                 'name' => 'student',
                 'class' => '10',
                 'username' => 'student',
@@ -24,6 +25,7 @@ class StudentsSeeder extends Seeder
                 'role' => 'student'
             ],
             [
+                'nis' => '222',
                 'name' => 'student2',
                 'class' => '10',
                 'username' => 'student2',
@@ -32,6 +34,7 @@ class StudentsSeeder extends Seeder
                 'role' => 'student'
             ],
             [
+                'nis' => '333',
                 'name' => 'student3',
                 'class' => '10',
                 'username' => 'student3',

@@ -16,6 +16,7 @@ class SupervisorsImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         return new Supervisor([
+            'kode' => $row['kode'],
             'name' => $row['nama'],
             'username' => $row['username'],
             'password' => bcrypt($row['password']),

@@ -15,6 +15,7 @@ class CreateSupervisorsTable extends Migration
     {
         Schema::create('supervisors', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('code', 5);
             $table->string('name');
             $table->string('username', 30);
             $table->string('password');

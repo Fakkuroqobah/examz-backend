@@ -16,6 +16,7 @@ class StudentsImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         return new Student([
+            'nis' => $row['nis'],
             'name' => $row['nama'],
             'username' => $row['username'],
             'class' => $row['kelas'],

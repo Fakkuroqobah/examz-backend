@@ -16,14 +16,16 @@ class SupervisorsSeeder extends Seeder
     {
         $supervisors = [
             [
-                'name' => 'supervisors',
-                'username' => 'supervisors',
+                'code' => '1',
+                'name' => 'supervisor1',
+                'username' => 'supervisor1',
                 'password' => bcrypt('password'),
                 'role' => 'supervisors'
             ],
             [
-                'name' => 'supervisors2',
-                'username' => 'supervisors2',
+                'code' => '2',
+                'name' => 'supervisor2',
+                'username' => 'supervisor2',
                 'password' => bcrypt('password'),
                 'role' => 'supervisors'
             ]
