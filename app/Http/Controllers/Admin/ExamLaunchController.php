@@ -37,4 +37,24 @@ class ExamLaunchController extends Controller
             ], 500);
         }
     }
+
+    public function triggerRated(Request $request, $type)
+    {
+        $exam = Exam::findOrFail($request->id);
+
+        try {
+            $exam->update([
+                'is_rated' => intval($type),
+            ]);
+
+            return response()->json([
+                'message' => 'Success',
+                'data' => $exam
+            ], 200);
+        } catch (Exception $err) {
+            return response()->json([
+                'errors' => ['server' => ['Something went error']]
+            ], 500);
+        }
+    }
 }

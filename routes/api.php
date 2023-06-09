@@ -91,6 +91,7 @@ Route::prefix('supervisor')->group(function () {
         Route::prefix('exam')->group(function () {
             Route::get('/', [ExamLaunchController::class, 'index']);
             Route::post('/trigger/{type}', [ExamLaunchController::class, 'trigger']);
+            Route::post('/trigger-rated/{type}', [ExamLaunchController::class, 'triggerRated']);
         });
     });
 
