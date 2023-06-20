@@ -23,6 +23,8 @@ class CreateStudentScheduleTable extends Migration
 
             $table->foreign('schedule_id')->references('id')->on('schedules');
             $table->foreign('student_id')->references('id')->on('students');
+
+            $table->unique(['schedule_id', 'student_id']);
         });
     }
 

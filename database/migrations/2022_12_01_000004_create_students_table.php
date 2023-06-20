@@ -26,6 +26,8 @@ class CreateStudentsTable extends Migration
             $table->timestamps();
 
             $table->foreign('room_id')->references('id')->on('rooms');
+
+            $table->unique('username');
         });
     }
 

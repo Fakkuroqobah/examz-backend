@@ -23,6 +23,8 @@ class CreateAnswerStudentTable extends Migration
             $table->foreign('student_id')->references('id')->on('students');
             $table->foreign('question_id')->references('id')->on('questions');
             $table->foreign('answer_option_id')->references('id')->on('answer_option');
+
+            $table->unique(['student_id', 'question_id']);
         });
     }
 

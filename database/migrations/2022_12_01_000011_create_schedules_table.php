@@ -24,6 +24,8 @@ class CreateSchedulesTable extends Migration
             $table->foreign('room_id')->references('id')->on('rooms');
             $table->foreign('supervisor_id')->references('id')->on('supervisors');
             $table->foreign('exam_id')->references('id')->on('exams');
+
+            $table->unique(['room_id', 'supervisor_id', 'exam_id']);
         });
     }
 

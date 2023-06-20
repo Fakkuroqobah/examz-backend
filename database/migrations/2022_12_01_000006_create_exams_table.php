@@ -27,6 +27,8 @@ class CreateExamsTable extends Migration
             $table->timestamps();
 
             $table->foreign('teacher_id')->references('id')->on('teachers');
+
+            $table->unique('name');
         });
     }
 

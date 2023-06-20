@@ -22,6 +22,8 @@ class CreateTeachersTable extends Migration
             $table->string('role')->default('teacher');
             $table->rememberToken();
             $table->timestamps();
+
+            $table->unique('username');
         });
     }
 
