@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\AnswerOption;
+use App\Models\AnswerEssay;
 use App\Models\Question;
 use App\Models\Exam;
 use App\Models\Type;
@@ -16,7 +17,7 @@ class QuestionController extends Controller
         $exam = Exam::find($id);
         if(!$exam) return abort(404);
 
-        $question = Question::with('answerOption')->where('exam_id', $id)->get();
+        $question = Question::with(['answerOption', 'answerEssay'])->where('exam_id', $id)->get();
 
         return response()->json([
             'message' => 'Success',
@@ -27,24 +28,16 @@ class QuestionController extends Controller
     private function is_answer_option_empty($arr)
     {
         if(is_array($arr)) {
-            foreach($arr as $value) if(!empty($value['answer_option'])) return false;
+            foreach($arr as $value) if(empty(trim($value['answer_option']))) return true;
         }
 
-        return true;
+        return false;
     }
 
     private function is_answer_correct_empty($arr)
     {
         if(is_array($arr)) {
             foreach($arr as $value) {
-                // $correct;
-                // if($value['answer_correct'] == "true") {
-                //     $correct = true;
-                // }else{
-                //     $correct = false;
-                // }
-
-                // if($correct && !empty($value['answer_option'])) return false;
                 if($value['answer_correct']) return false;
             }
         }
@@ -57,20 +50,29 @@ class QuestionController extends Controller
         $request->validate([
             'exam_id' => 'required',
             'subject' => 'required',
-            'answer' => 'required'
+            'answer' => 'required',
+            'type' => 'required'
         ]);
 
-        $answers = $request->answer;
-        if($this->is_answer_option_empty($answers)) {
-            return response()->json([
-                'errors' => ['error' => ['Terdapat opsi jawaban yang kosong']]
-            ], 422);
-        }
-        
-        if($this->is_answer_correct_empty($answers)) {
-            return response()->json([
-                'errors' => ['error' => ['Pilih salah satu opsi jawaban yang benar']]
-            ], 422);
+        if($request->type == 'choice') {
+            $answers = $request->answer;
+            if($this->is_answer_option_empty($answers)) {
+                return response()->json([
+                    'errors' => ['error' => ['Terdapat opsi jawaban yang kosong']]
+                ], 422);
+            }
+            
+            if($this->is_answer_correct_empty($answers)) {
+                return response()->json([
+                    'errors' => ['error' => ['Pilih salah satu opsi jawaban yang benar']]
+                ], 422);
+            }
+        }else{
+            if(empty(trim($request->answer))) {
+                return response()->json([
+                    'errors' => ['error' => ['Ekspektasi jawaban wajib diisi']]
+                ], 422);
+            }
         }
 
         $exam = Exam::findOrFail($request->exam_id);
@@ -93,26 +95,29 @@ class QuestionController extends Controller
                 ], 500);
             }
 
-            foreach ($answers as $answer) {
-                if(!empty($answer['answer_option'])) {
-                    // $correct;
-                    // if($answer['answer_correct'] == "true") {
-                    //     $correct = true;
-                    // }else{
-                    //     $correct = false;
-                    // }
-
+            if($request->type == 'choice') {
+                foreach ($request->answer as $answer) {
                     AnswerOption::create([
                         'question_id' => $question->id,
                         'subject' => $answer['answer_option'],
                         'correct' => $answer['answer_correct']
-                        // 'correct' => ($correct) ? $answer['answer_option'] : null
                     ]);
                 }
+            }else{
+                AnswerEssay::create([
+                    'question_id' => $question->id,
+                    'default_answer' => $request->answer,
+                ]);
             }
 
             DB::commit();
-            $question = Question::with(['answerOption'])->findOrFail($question->id);
+
+            if($request->type == 'choice') {
+                $question = Question::with(['answerOption'])->findOrFail($question->id);
+            }else{
+                $question = Question::with(['answerEssay'])->findOrFail($question->id);
+            }
+
             return response()->json([
                 'message' => 'Success',
                 'data' => $question
@@ -130,20 +135,29 @@ class QuestionController extends Controller
         $request->validate([
             'exam_id' => 'required',
             'subject' => 'required',
-            'answer' => 'required'
+            'answer' => 'required',
+            'type' => 'required'
         ]);
 
-        $answers = $request->answer;
-        if($this->is_answer_option_empty($answers)) {
-            return response()->json([
-                'errors' => ['error' => ['Terdapat opsi jawaban yang kosong']]
-            ], 422);
-        }
-        
-        if($this->is_answer_correct_empty($answers)) {
-            return response()->json([
-                'errors' => ['error' => ['Pilih salah satu opsi jawaban yang benar']]
-            ], 422);
+        if($request->type == 'choice') {
+            $answers = $request->answer;
+            if($this->is_answer_option_empty($answers)) {
+                return response()->json([
+                    'errors' => ['error' => ['Terdapat opsi jawaban yang kosong']]
+                ], 422);
+            }
+            
+            if($this->is_answer_correct_empty($answers)) {
+                return response()->json([
+                    'errors' => ['error' => ['Pilih salah satu opsi jawaban yang benar']]
+                ], 422);
+            }
+        }else{
+            if(empty(trim($request->answer))) {
+                return response()->json([
+                    'errors' => ['error' => ['Ekspektasi jawaban wajib diisi']]
+                ], 422);
+            }
         }
 
         $exam = Exam::findOrFail($request->exam_id);
@@ -166,27 +180,31 @@ class QuestionController extends Controller
                 ], 500);
             }
 
-            AnswerOption::where('question_id', $id)->delete();
-            foreach ($answers as $answer) {
-                if(!empty($answer['answer_option'])) {
-                    // $correct;
-                    // if($answer['answer_correct'] == "true") {
-                    //     $correct = true;
-                    // }else{
-                    //     $correct = false;
-                    // }
-
+            if($request->type == 'choice') {
+                AnswerOption::where('question_id', $id)->delete();
+                foreach ($answers as $answer) {
                     AnswerOption::create([
                         'question_id' => $question->id,
                         'subject' => $answer['answer_option'],
-			            'correct' => $answer['answer_correct']
-                        // 'correct' => ($correct) ? $answer['answer_option'] : null
+                        'correct' => $answer['answer_correct']
                     ]);
                 }
+            }else{
+                AnswerEssay::where('question_id', $id)->delete();
+                AnswerEssay::create([
+                    'question_id' => $question->id,
+                    'default_answer' => $request->answer,
+                ]);
             }
 
             DB::commit();
-            $question = Question::with(['answerOption'])->findOrFail($question->id);
+            
+            if($request->type == 'choice') {
+                $question = Question::with(['answerOption'])->findOrFail($question->id);
+            }else{
+                $question = Question::with(['answerEssay'])->findOrFail($question->id);
+            }
+
             return response()->json([
                 'message' => 'Success',
                 'data' => $question

@@ -13,6 +13,11 @@ class Question extends Model
         return $this->hasMany('App\Models\AnswerOption');
     }
 
+    public function answerEssay()
+    {
+        return $this->hasOne('App\Models\AnswerEssay');
+    }
+
     public function exam()
     {
         return $this->belongsTo('App\Models\Exam');

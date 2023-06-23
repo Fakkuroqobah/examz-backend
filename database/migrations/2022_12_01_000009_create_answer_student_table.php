@@ -17,7 +17,8 @@ class CreateAnswerStudentTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('student_id');
             $table->unsignedInteger('question_id');
-            $table->unsignedInteger('answer_option_id');
+            $table->unsignedInteger('answer_option_id')->nullable();
+            $table->longText('answer_essay')->nullable();
             $table->timestamps();
 
             $table->foreign('student_id')->references('id')->on('students');
