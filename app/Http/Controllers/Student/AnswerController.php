@@ -158,16 +158,30 @@ class AnswerController extends Controller
         $check = AnswerStudent::where('student_id', Auth::user()->id)->where('question_id', $request->question_id)->first();
 
         try {
-            if(is_null($check)) {
-                $answerStudent = AnswerStudent::create([
-                    'question_id' => $request->question_id,
-                    'answer_option_id' => $request->answer_option_id,
-                    'student_id' => Auth::user()->id,
-                ]);
+            if($request->type == 'choice') {
+                if(is_null($check)) {
+                    $answerStudent = AnswerStudent::create([
+                        'question_id' => $request->question_id,
+                        'answer_option_id' => $request->answer_option_id,
+                        'student_id' => Auth::user()->id,
+                    ]);
+                }else{
+                    $check->update([
+                        'answer_option_id' => $request->answer_option_id 
+                    ]);
+                }
             }else{
-                $check->update([
-                    'answer_option_id' => $request->answer_option_id 
-                ]);
+                if(is_null($check)) {
+                    $answerStudent = AnswerStudent::create([
+                        'question_id' => $request->question_id,
+                        'answer_essay' => $request->answer_essay,
+                        'student_id' => Auth::user()->id,
+                    ]);
+                }else{
+                    $check->update([
+                        'answer_essay' => $request->answer_essay 
+                    ]);
+                }
             }
     
             return response()->json([
