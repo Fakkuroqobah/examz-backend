@@ -20,38 +20,24 @@ class AnswerController extends Controller
 {
     public function examLaunched()
     {
-        // $check = StudentSchedule::where('student_id', Auth::user()->id)->whereNotNull('end_time')->get();
-        // $id = [];
-
-        // foreach ($check as $value) {
-        //     $id[] = $value->id;
-        // }
-
-        $data = Schedule::with(['exam'])
+        $data = Schedule::with(['exam', 'studentSchedule'])
         ->where('room_id', Auth::user()->room_id)
         ->whereHas('exam', function($q) {
             $q->where('class', Auth::user()->class)->where('status', 'launched');
         })
-        // ->whereHas('studentSchedule', function($q) {
-        //     $q->where('student_id', Auth::user()->id)->whereNull('end_time');
-        // })
         ->get();
 
-        // $data = [];
-        // for($i = 0; $i < count($fetch); $i++) {
-        //     $data[] = $fetch[$i];
-        //     if(!is_null($fetch[$i]->student_schedule)) {
-        //         if(is_null($fetch[$i]->student_schedule->end_time)) {
-        //             $data[] = $fetch[$i];
-        //         }else{
-        //             $data[$i] = [];
-        //         }
-        //     }
-        // }
+        foreach($data as $key => $row) {
+            if(!is_null($row->studentSchedule)) {
+                if(!is_null($row->studentSchedule->end_time)) {
+                    $data->forget($key);
+                }
+            }
+        }
 
         return response()->json([
             'message' => 'Success',
-            'data' => $data
+            'data' => $data->values()
         ], 200);
     }
 
