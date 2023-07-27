@@ -18,6 +18,7 @@ class CreateQuestionsTable extends Migration
             $table->unsignedInteger('exam_id');
             $table->longText('subject');
             $table->enum('type', ['choice', 'essay']);
+            $table->tinyInteger('score')->default(1);
             $table->timestamps();
 
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');

@@ -56,15 +56,17 @@ class AnswerController extends Controller
     public function rated($id)
     {
         $totalCorrect = 0;
-        $answerStudent = AnswerStudent::where('student_id', Auth::user()->id)
+        $answerStudent = AnswerStudent::with(['question'])->where('student_id', Auth::user()->id)
         ->whereHas('question', function($q) use($id) {
             $q->where('exam_id', $id);
         })->orderBy('question_id', 'ASC')->get();
 
         foreach ($answerStudent as $value) {
-            $answerOption = AnswerOption::find($value->answer_option_id);
-            if($answerOption->correct == 1) {
-                $totalCorrect++;
+            if($value->question->type == 'choice') {
+                $answerOption = AnswerOption::find($value->answer_option_id);
+                if($answerOption->correct == 1) {
+                    $totalCorrect += $value->score;
+                }
             }
         }
 
@@ -97,18 +99,27 @@ class AnswerController extends Controller
 
         $data = Schedule::where('token', $request->token)->find($id);
         if(!is_null($data)) {
+            $check = StudentSchedule::where('schedule_id', $data->id)->where('student_id', Auth::user()->id)->first();
+            if(is_null($check)) {
+                StudentSchedule::create([
+                    'schedule_id' => $data->id,
+                    'student_id' => Auth::user()->id,
+                    'start_time' => now()
+                ]);
+            }else{
+                if(!is_null($check->end_time)) {
+                    return response()->json([
+                        'errors' => ['error' => ['Maaf, kamu sudah menyelesaikan ujian ini']]
+                    ], 422);
+                }
+            }
+
             $exam = Exam::with('question.answerOption')->findOrFail($data->exam_id);
             if($exam->is_random == 1) {
                 $exam = Exam::with(['question' => function($q) {
                     $q->inRandomOrder();
                 }, 'question.answerOption'])->findOrFail($data->exam_id);
             }
-
-            StudentSchedule::create([
-                'schedule_id' => $data->id,
-                'student_id' => Auth::user()->id,
-                'start_time' => now()
-            ]);
 
             // $databaseDateTime = $data->updated_at;
             // $minutesToAdd = $exam->time;
@@ -162,10 +173,12 @@ class AnswerController extends Controller
                         'question_id' => $request->question_id,
                         'answer_essay' => $request->answer_essay,
                         'student_id' => Auth::user()->id,
+                        'score' => -1
                     ]);
                 }else{
                     $check->update([
-                        'answer_essay' => $request->answer_essay 
+                        'answer_essay' => $request->answer_essay,
+                        'score' => -1
                     ]);
                 }
             }

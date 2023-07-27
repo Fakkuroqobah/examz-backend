@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Teacher;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\AnswerStudent;
 use App\Models\StudentSchedule;
@@ -13,7 +14,7 @@ use Auth;
 class StudentRatedController extends Controller
 {
     public function index() {
-        $data = Exam::where('is_rated', 1)->where('teacher_id', Auth::guard('teacher')->user()->id)->get();
+        $data = Exam::where('teacher_id', Auth::guard('teacher')->user()->id)->get();
 
         return response()->json([
             'message' => 'Success',
@@ -39,15 +40,17 @@ class StudentRatedController extends Controller
     public function detailRated($studentId, $examId)
     {
         $totalCorrect = 0;
-        $answerStudent = AnswerStudent::where('student_id', $studentId)
+        $answerStudent = AnswerStudent::with(['question'])->where('student_id', $studentId)
         ->whereHas('question', function($q) use($examId) {
             $q->where('exam_id', $examId);
         })->orderBy('question_id', 'ASC')->get();
 
         foreach ($answerStudent as $value) {
-            $answerOption = AnswerOption::find($value->answer_option_id);
-            if($answerOption->correct == 1) {
-                $totalCorrect++;
+            if($value->question->type == 'choice') {
+                $answerOption = AnswerOption::find($value->answer_option_id);
+                if($answerOption->correct == 1) {
+                    $totalCorrect += $value->score;
+                }
             }
         }
 
@@ -70,5 +73,15 @@ class StudentRatedController extends Controller
                 'questions' => $questions
             ]
         ], 200);
+    }
+
+    public function updateRated(Request $request, $id)
+    {
+        $data = AnswerStudent::findOrFail($id);
+        $data->update([
+            'score' => $request->score
+        ]);
+
+        return $this->detailRated($request->studentId, $request->examId);
     }
 }
