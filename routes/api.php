@@ -120,6 +120,7 @@ Route::prefix('supervisor')->group(function () {
 
         Route::prefix('rated')->group(function () {
             Route::get('/', [StudentRatedController::class, 'index']);
+            Route::get('/export/{id}', [StudentRatedController::class, 'export']);
             Route::get('/student/{id}/{class}', [StudentRatedController::class, 'detailStudent']);
             Route::get('/student-detail/{studentId}/{examId}', [StudentRatedController::class, 'detailRated']);
             Route::post('/student-rated/{id}', [StudentRatedController::class, 'updateRated']);

@@ -9,18 +9,20 @@ use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+  use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected function fisherYatesShuffle($limit = 5) {
-        $alphabet = range('a', 'z');
-        $len = count($alphabet);
+  protected function fisherYatesShuffle() {
+    $array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    $count = count($array);
+
+    for ($i = $count - 1; $i > 0; $i--) {
+      $j = random_int(0, $i);
         
-        for ($i = $len - 1; $i > 0; $i--) {
-          $j = mt_rand(0, $i);
-          [$alphabet[$i], $alphabet[$j]] = [$alphabet[$j], $alphabet[$i]];
-        }
-        
-        $shuffled = array_slice($alphabet, 0, $limit);
-        return implode('', $shuffled);
+      $temp = $array[$i];
+      $array[$i] = $array[$j];
+      $array[$j] = $temp;
     }
+
+    return substr(implode('', $array), 0, 5);
+  }
 }
