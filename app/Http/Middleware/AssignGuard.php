@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 use JWTAuth;
 use Exception;
@@ -20,23 +21,30 @@ class AssignGuard extends BaseMiddleware
      */
     public function handle(Request $request, Closure $next, $guard = null)
     {
-        if($guard != null) {
-            auth()->shouldUse($guard);
-
-            // try {
-            //     $user = JWTAuth::parseToken()->authenticate();
-            //     dd($user->getGuard());
-            // } catch (Exception $e) {
-            //     if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
-            //         return response()->json(['status' => 'Token is Invalid']);
-            //     }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
-            //         return response()->json(['status' => 'Token is Expired']);
-            //     }else{
-            //         return response()->json(['status' => 'Authorization Token not found']);
-            //     }
-            // }
+        try {
+            JWTAuth::parseToken()->authenticate();
+            $user = auth($guard)->user();
+        } catch (Exception $e) {
+            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
+                return response()->json(['status' => 'Token tidak valid']);
+            }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
+                return response()->json(['status' => 'Token telah kadaluarsa']);
+            }else{
+                return response()->json(['status' => 'Otentikasi gagal']);
+            }
         }
-
-        return $next($request);
+        
+        if ($user && ($user->role == $guard)) {
+            return $next($request);
+        }
+    
+        return $this->unauthorized();
+    }
+    
+    private function unauthorized($message = null){
+        return response()->json([
+            'message' => $message ? $message : 'Kamu tidak memiliki akses kedalam sumber ini',
+            'success' => false
+        ], 401);
     }
 }
