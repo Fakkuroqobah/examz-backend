@@ -26,11 +26,11 @@ class AssignGuard extends BaseMiddleware
             $user = auth($guard)->user();
         } catch (Exception $e) {
             if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
-                return response()->json(['status' => 'Token tidak valid']);
+                return response()->json(['status' => 'Token tidak valid'], 401);
             }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
-                return response()->json(['status' => 'Token telah kadaluarsa']);
+                return response()->json(['status' => 'Token telah kadaluarsa'], 401);
             }else{
-                return response()->json(['status' => 'Otentikasi gagal']);
+                return response()->json(['status' => 'Otentikasi gagal'], 401);
             }
         }
         
@@ -44,7 +44,6 @@ class AssignGuard extends BaseMiddleware
     private function unauthorized($message = null){
         return response()->json([
             'message' => $message ? $message : 'Kamu tidak memiliki akses kedalam sumber ini',
-            'success' => false
-        ], 401);
+        ], 403);
     }
 }

@@ -46,10 +46,14 @@ Route::prefix('supervisor')->group(function () {
     Route::get('logout', [SupervisorController::class, 'logout']);
 });
 
+Route::get('admin/refresh', [AdminController::class, 'refresh']);
+Route::get('teacher/refresh', [TeacherController::class, 'refresh']);
+Route::get('supervisor/refresh', [SupervisorController::class, 'refresh']);
+Route::get('student/refresh', [StudentController::class, 'refresh']);
+
 Route::middleware(['api'])->group(function() {
     // ADMIN
-    Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
-        Route::get('refresh', [AdminController::class, 'refresh']);
+    Route::prefix('admin')->middleware(['assign.guard:admin'])->group(function () {
         Route::get('get-user', [AdminController::class, 'getAuthenticatedUser']);
 
         // GET DATA
@@ -96,8 +100,7 @@ Route::middleware(['api'])->group(function() {
     });
 
     // TEACHER
-    Route::prefix('teacher')->middleware(['auth:teacher'])->group(function () {
-        Route::get('refresh', [TeacherController::class, 'refresh']);
+    Route::prefix('teacher')->middleware(['assign.guard:teacher'])->group(function () {
         Route::get('get-user', [TeacherController::class, 'getAuthenticatedUser']);
 
         Route::prefix('exam')->group(function () {
@@ -128,8 +131,7 @@ Route::middleware(['api'])->group(function() {
     });
 
     // SUPERVISOR
-    Route::prefix('supervisor')->middleware(['auth:supervisor'])->group(function () {
-        Route::get('refresh', [SupervisorController::class, 'refresh']);
+    Route::prefix('supervisor')->middleware(['assign.guard:supervisor'])->group(function () {
         Route::get('get-user', [SupervisorController::class, 'getAuthenticatedUser']);
 
         Route::prefix('exam')->group(function () {
@@ -144,8 +146,7 @@ Route::middleware(['api'])->group(function() {
     });
 
     // STUDENT
-    Route::prefix('student')->middleware(['auth:student'])->group(function () {
-        Route::get('refresh', [StudentController::class, 'refresh']);
+    Route::prefix('student')->middleware(['assign.guard:student'])->group(function () {
         Route::get('get-user', [StudentController::class, 'getAuthenticatedUser']);
 
         Route::get('/exam-launched', [AnswerController::class, 'examLaunched']);
