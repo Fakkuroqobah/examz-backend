@@ -28,22 +28,18 @@ use App\Http\Controllers\Student\AnswerController;
 
 Route::prefix('admin')->group(function () {
     Route::post('login', [AdminController::class, 'login']);
-    Route::get('logout', [AdminController::class, 'logout']);
 });
 
 Route::prefix('teacher')->group(function () {
     Route::post('login', [TeacherController::class, 'login']);
-    Route::get('logout', [TeacherController::class, 'logout']);
 });
 
 Route::prefix('student')->group(function () {
     Route::post('login', [StudentController::class, 'login']);
-    Route::get('logout', [StudentController::class, 'logout']);
 });
 
 Route::prefix('supervisor')->group(function () {
     Route::post('login', [SupervisorController::class, 'login']);
-    Route::get('logout', [SupervisorController::class, 'logout']);
 });
 
 Route::get('admin/refresh', [AdminController::class, 'refresh']);
@@ -54,6 +50,7 @@ Route::get('student/refresh', [StudentController::class, 'refresh']);
 Route::middleware(['api'])->group(function() {
     // ADMIN
     Route::prefix('admin')->middleware(['assign.guard:admin'])->group(function () {
+        Route::get('logout', [AdminController::class, 'logout']);
         Route::get('get-user', [AdminController::class, 'getAuthenticatedUser']);
 
         // GET DATA
@@ -101,6 +98,7 @@ Route::middleware(['api'])->group(function() {
 
     // TEACHER
     Route::prefix('teacher')->middleware(['assign.guard:teacher'])->group(function () {
+        Route::get('logout', [TeacherController::class, 'logout']);
         Route::get('get-user', [TeacherController::class, 'getAuthenticatedUser']);
 
         Route::prefix('exam')->group(function () {
@@ -132,6 +130,7 @@ Route::middleware(['api'])->group(function() {
 
     // SUPERVISOR
     Route::prefix('supervisor')->middleware(['assign.guard:supervisor'])->group(function () {
+        Route::get('logout', [SupervisorController::class, 'logout']);
         Route::get('get-user', [SupervisorController::class, 'getAuthenticatedUser']);
 
         Route::prefix('exam')->group(function () {
@@ -147,6 +146,7 @@ Route::middleware(['api'])->group(function() {
 
     // STUDENT
     Route::prefix('student')->middleware(['assign.guard:student'])->group(function () {
+        Route::get('logout', [StudentController::class, 'logout']);
         Route::get('get-user', [StudentController::class, 'getAuthenticatedUser']);
 
         Route::get('/exam-launched', [AnswerController::class, 'examLaunched']);
