@@ -20,14 +20,14 @@ class SupervisorsSeeder extends Seeder
                 'name' => 'supervisor1',
                 'username' => 'supervisor1',
                 'password' => bcrypt('password'),
-                'role' => 'supervisors'
+                'role' => 'supervisor'
             ],
             [
                 'code' => '2',
                 'name' => 'supervisor2',
                 'username' => 'supervisor2',
                 'password' => bcrypt('password'),
-                'role' => 'supervisors'
+                'role' => 'supervisor'
             ]
         ];
         
