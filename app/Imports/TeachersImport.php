@@ -16,7 +16,7 @@ class TeachersImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         return new Teacher([
-            'kode' => $row['kode'],
+            'code' => $row['kode'],
             'name' => $row['nama'],
             'username' => $row['username'],
             'password' => bcrypt($row['password']),

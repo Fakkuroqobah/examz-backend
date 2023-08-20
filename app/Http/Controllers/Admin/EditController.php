@@ -15,7 +15,7 @@ class EditController extends Controller {
             'code' => 'required|max:3',
             'name' => 'required|max:255',
             'username' => 'required|max:30',
-            'password' => 'nullable',
+            'password' => 'nullable|max:255',
         ]);
 
         $data = Teacher::findOrFail($id);
@@ -50,9 +50,10 @@ class EditController extends Controller {
         $request->validate([
             'nis' => 'required|max:10',
             'name' => 'required|max:255',
-            'class' => 'required',
+            'class' => 'required|max:10',
+            'room_id' => 'required',
             'username' => 'required|max:30',
-            'password' => 'nullable',
+            'password' => 'nullable|max:255',
         ]);
 
         $data = Student::findOrFail($id);
@@ -61,6 +62,7 @@ class EditController extends Controller {
                 'nis' => $request->nis,
                 'name' => $request->name,
                 'class' => $request->class,
+                'room_id' => $request->room_id,
                 'username' => $request->username,
                 'password' => bcrypt($request->password),
             ]);
@@ -69,6 +71,7 @@ class EditController extends Controller {
                 'nis' => $request->nis,
                 'name' => $request->name,
                 'class' => $request->class,
+                'room_id' => $request->room_id,
                 'username' => $request->username
             ]);
         }
@@ -79,6 +82,7 @@ class EditController extends Controller {
             ], 500);
         }
 
+        $data = Student::with(['room'])->findOrFail($id);
         return response()->json([
             'message' => 'Success',
             'data' => $data
@@ -90,7 +94,7 @@ class EditController extends Controller {
             'code' => 'required|max:3',
             'name' => 'required|max:255',
             'username' => 'required|max:30',
-            'password' => 'nullable',
+            'password' => 'nullable|max:255',
         ]);
 
         $data = Supervisor::findOrFail($id);

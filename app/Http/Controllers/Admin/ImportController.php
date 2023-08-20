@@ -41,7 +41,7 @@ class ImportController extends Controller
 
     public function getStudent()
     {
-        $data = Student::all();
+        $data = Student::with(['room'])->get();
         return response()->json([
             'message' => 'success',
             'data' => $data
@@ -107,8 +107,8 @@ class ImportController extends Controller
         $last = Student::orderBy('id', 'DESC')->first();
         Excel::import(new StudentsImport, $request->file('excel'));
 
-        if(!is_null($last)) $data = Student::where('id', '>', $last->id)->get();
-        else $data = Student::all();
+        if(!is_null($last)) $data = Student::with(['room'])->where('id', '>', $last->id)->get();
+        else $data = Student::with(['room'])->all();
         return response()->json([
             'message' => 'success',
             'data' => $data

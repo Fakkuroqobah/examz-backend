@@ -7,6 +7,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use App\Models\Room;
 use App\Models\Supervisor;
+use App\Models\Exam;
 
 class SchedulesImport implements ToModel, WithHeadingRow
 {
@@ -19,6 +20,7 @@ class SchedulesImport implements ToModel, WithHeadingRow
     {
         $room = Room::where('name', $row['ruangan'])->firstOrFail();
         $supervisor = Supervisor::where('code', $row['kode_pengawas'])->firstOrFail();
+        $exam = Exam::where('id', $row['id_mata_ujian'])->firstOrFail();
 
         return new Schedule([
             'room_id' => $room->id,
