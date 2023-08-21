@@ -30,7 +30,7 @@ class StudentController extends Controller
                 return response()->json(['error' => 'Username atau password salah'], 400);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'tidak dapat membuat token'], 500);
+            return response()->json(['error' => 'Tidak dapat membuat token'], 500);
         }
 
         return $this->respondWithToken($token);

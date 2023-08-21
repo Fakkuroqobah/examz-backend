@@ -42,34 +42,9 @@ class ExamStartController extends Controller
 
     public function start(Request $request, $id)
     {
-        // $sumStudent = Student::select(['id'])->count();
-        // if($sumStudent == 0) {
-        //     return response()->json([
-        //         'errors' => ['error' => ['Blank student data']],
-        //     ], 422);
-        // }
-
-        // $sumQuestion = Question::select(['id'])->where('exam_id', $id)->first();
-        // if(is_null($sumQuestion)) {
-        //     return response()->json([
-        //         'errors' => ['error' => ['The question is still empty']],
-        //     ], 422);
-        // }
-
-        
         $data = Schedule::with(['exam'])->find($id);
-        // return response()->json([
-        //     'message' => 'Success',
-        //     'data' => $data
-        // ], 404);
 
         try {
-            // if(is_null($exam)) {
-            //     return response()->json([
-            //         'errors' => ['error' => ['The exam is running or finished']],
-            //     ], 422);
-            // }
-
             $data->update([
                 'token' => $this->fisherYatesShuffle(),
             ]);

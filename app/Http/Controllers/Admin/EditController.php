@@ -127,7 +127,7 @@ class EditController extends Controller {
 
     public function editRoom(Request $request, $id) {
         $request->validate([
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:rooms,name',
         ]);
 
         $data = Room::findOrFail($id);

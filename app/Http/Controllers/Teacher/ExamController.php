@@ -45,7 +45,7 @@ class ExamController extends Controller
 
     public function add(Request $request) {
         $request->validate([
-            'name' => 'required|max:30',
+            'name' => 'required|max:30|unique:exams',
             'class' => 'required',
             'description' => 'nullable',
             'thumbnail' => 'nullable',

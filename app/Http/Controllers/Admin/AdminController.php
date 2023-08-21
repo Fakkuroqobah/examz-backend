@@ -27,10 +27,10 @@ class AdminController extends Controller
 
         try {
             if (!$token = auth('admin')->attempt($credentials)) {
-                return response()->json(['error' => 'invalid credentials'], 400);
+                return response()->json(['error' => 'Username atau password salah'], 400);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could not create token'], 500);
+            return response()->json(['error' => 'Tidak dapat membuat token'], 500);
         }
 
         return $this->respondWithToken($token);

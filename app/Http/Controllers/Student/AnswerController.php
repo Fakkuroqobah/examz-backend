@@ -55,7 +55,8 @@ class AnswerController extends Controller
 
     public function rated($id)
     {
-        $totalCorrect = 0;
+        $totalCorrectChoice = 0;
+        $totalCorrectEssay = 0;
         $answerStudent = AnswerStudent::with(['question'])->where('student_id', Auth::user()->id)
         ->whereHas('question', function($q) use($id) {
             $q->where('exam_id', $id);
@@ -65,7 +66,13 @@ class AnswerController extends Controller
             if($value->question->type == 'choice') {
                 $answerOption = AnswerOption::find($value->answer_option_id);
                 if($answerOption->correct == 1) {
-                    $totalCorrect += $value->score;
+                    $totalCorrectChoice += $value->score;
+                }
+            }else{
+                if($value->score == -1) {
+                    $totalCorrectEssay += 0;
+                }else{
+                    $totalCorrectEssay += $value->score;
                 }
             }
         }
@@ -84,7 +91,8 @@ class AnswerController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => [
-                'total' => $totalCorrect,
+                'score_choice' => $totalCorrectChoice,
+                'score_essai' => $totalCorrectEssay,
                 'answer_student' => $answerStudent,
                 'questions' => $questions
             ]

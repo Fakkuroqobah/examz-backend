@@ -87,6 +87,7 @@ class QuestionController extends Controller
             $question = Question::create([
                 'exam_id' => $request->exam_id,
                 'subject' => $request->subject,
+                'type' => $request->type,
             ]);
 
             if(!$question) {

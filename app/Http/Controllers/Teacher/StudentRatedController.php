@@ -41,17 +41,24 @@ class StudentRatedController extends Controller
     // id student
     public function detailRated($studentId, $examId)
     {
-        $totalCorrect = 0;
+        $totalCorrectChoice = 0;
+        $totalCorrectEssay = 0;
         $answerStudent = AnswerStudent::with(['question'])->where('student_id', $studentId)
         ->whereHas('question', function($q) use($examId) {
             $q->where('exam_id', $examId);
         })->orderBy('question_id', 'ASC')->get();
 
         foreach ($answerStudent as $value) {
-            if($value->question->type == 'choice') {
+             if($value->question->type == 'choice') {
                 $answerOption = AnswerOption::find($value->answer_option_id);
                 if($answerOption->correct == 1) {
-                    $totalCorrect += $value->score;
+                    $totalCorrectChoice += $value->score;
+                }
+            }else{
+                if($value->score == -1) {
+                    $totalCorrectEssay += 0;
+                }else{
+                    $totalCorrectEssay += $value->score;
                 }
             }
         }
@@ -70,7 +77,8 @@ class StudentRatedController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => [
-                'total' => $totalCorrect,
+                'score_choice' => $totalCorrectChoice,
+                'score_essai' => $totalCorrectEssay,
                 'answer_student' => $answerStudent,
                 'questions' => $questions
             ]
@@ -126,11 +134,6 @@ class StudentRatedController extends Controller
                 'score_essai' => $totalCorrectEssay,
             ];
         }
-
-        // return response()->json([
-        //     'message' => 'Success',
-        //     'data' => $data
-        // ], 200);
 
         return Excel::download(new RatedExport($data), 'nilai.xlsx');
     }
