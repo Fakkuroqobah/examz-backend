@@ -46,9 +46,9 @@ class ExamStartController extends Controller
 
         try {
             $data->update([
-                'token' => $this->fisherYatesShuffle(),
+                'token' => $this->fisherYatesShuffle([]),
             ]);
-    
+
             return response()->json([
                 'message' => 'Success',
                 'data' => $data

@@ -124,26 +124,37 @@ class AnswerController extends Controller
 
             $exam = Exam::with('question.answerOption')->findOrFail($data->exam_id);
             if($exam->is_random == 1) {
+                // $exam = Exam::with(['question', 'question.answerOption'])->findOrFail($id);
+                // $arr = [];
+                // foreach($exam->question as $row) {
+                //     $arr[] = $row->id;
+                // }
+
+                // $parent = Exam::with(['question', 'question.answerOption'])->findOrFail($data->exam_id);
+                // $exam = $parent->children()
+                //     ->orderByRaw('FIELD(id, ' . implode(',', $arr) . ')')
+                //     ->get();
+
                 $exam = Exam::with(['question' => function($q) {
                     $q->inRandomOrder();
                 }, 'question.answerOption'])->findOrFail($data->exam_id);
             }
 
-            // $databaseDateTime = $data->updated_at;
-            // $minutesToAdd = $exam->time;
-            // $databaseTime = DateTime::createFromFormat('Y-m-d H:i:s', $databaseDateTime);
-            // $updatedTime = clone $databaseTime;
-            // $updatedTime->add(new DateInterval("PT" . $minutesToAdd . "M"));
+            $databaseDateTime = $data->updated_at;
+            $minutesToAdd = $exam->time;
+            $databaseTime = DateTime::createFromFormat('Y-m-d H:i:s', $databaseDateTime);
+            $updatedTime = clone $databaseTime;
+            $updatedTime->add(new DateInterval("PT" . $minutesToAdd . "M"));
 
-            // $currentDateTime = new DateTime();
-            // $diff = $currentDateTime->diff($updatedTime);
-            // $remainingMinutes = $diff;
+            $currentDateTime = new DateTime();
+            $diff = $currentDateTime->diff($updatedTime);
+            $remainingMinutes = $diff;
 
-            // if($currentDateTime < $updatedTime) {
-            //     $exam['remaining_time'] = $remainingMinutes->i;
-            // }else{
-            //     $exam['remaining_time'] = 0;
-            // }
+            if($currentDateTime < $updatedTime) {
+                $exam['remaining_time'] = $remainingMinutes->i;
+            }else{
+                $exam['remaining_time'] = 0;
+            }
 
             $exam['remaining_time'] = $exam->time;
 
@@ -190,7 +201,7 @@ class AnswerController extends Controller
                     ]);
                 }
             }
-    
+
             return response()->json([
                 'message' => 'success'
             ], 200);

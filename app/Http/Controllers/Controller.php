@@ -11,10 +11,13 @@ class Controller extends BaseController
 {
   use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-  protected function fisherYatesShuffle() {
-    $array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  protected function fisherYatesShuffle($array = []) {
+    $length = count($array);
+    if($length == 0) {
+        $array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    }
+    
     $count = count($array);
-
     for ($i = $count - 1; $i > 0; $i--) {
       $j = random_int(0, $i);
         
@@ -23,6 +26,10 @@ class Controller extends BaseController
       $array[$j] = $temp;
     }
 
-    return substr(implode('', $array), 0, 5);
+    if($length == 0) {
+        return substr(implode('', $array), 0, 5);
+    }else{
+        return implode(',', $array);
+    }
   }
 }

@@ -18,7 +18,7 @@ class CreateExamsTable extends Migration
             $table->string('class', 2);
             $table->string('name');
             $table->enum('status', ['inactive', 'launched', 'finished'])->default('inactive');
-            $table->boolean('is_random')->default(0);
+            $table->boolean('is_random')->default(1);
             $table->string('thumbnail')->default('exam/exam_image.png');
             $table->longText('description')->nullable();
             $table->integer('time')->comment('minutes');

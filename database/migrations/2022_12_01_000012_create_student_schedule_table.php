@@ -17,6 +17,7 @@ class CreateStudentScheduleTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('schedule_id');
             $table->unsignedInteger('student_id');
+            $table->text('id_question');
             $table->string('block', 5)->nullable();
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();
